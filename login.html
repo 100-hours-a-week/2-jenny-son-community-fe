@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="kr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Community</title>
+    <link rel="stylesheet" type="text/css" href="login.css">
+    <link rel="stylesheet" type="text/css" href="header.css">
+</head>
+<body>
+    <div id="header"></div>
+    <div class="login">
+        <div class="login-container">
+            <div class="login-title">로그인</div>
+            <div class="login-input-container">
+                <div class="login-input">
+                    <p>이메일</p>
+                    <input type="text" id="email" placeholder="이메일을 입력하세요." autocomplete="off">
+                    <div class="error-container">
+                        <div class="email-failure-message hide failure-message">* 올바른 이메일 주소 형식을 입력해주세요. (예: example@example.com)</div>
+                    </div>
+                </div>
+                <div class="login-input">
+                    <p>비밀번호</p>
+                    <input type="text" id="password" placeholder="비밀번호를 입력하세요." autocomplete="off">
+                    <div class="error-container">
+                        <div class="password-failure-message hide failure-message">* 비밀번호는 8자 이상, 20자 이하이며, 대문자, 소문자, 숫자, 특수문자를 각각 최소 1개 포함해야 합니다.</div>
+                    </div>
+                    <div class="login-failure-message hide failure-message">* 아이디 또는 비밀번호를 확인해주세요.</div>
+                </div>
+            </div>
+            <button class="login-btn" disabled>로그인</button>
+            <button class="signup-btn">회원가입</button>
+        </div>
+    </div>
+    <script>
+        fetch("header.html")
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById("header").innerHTML = data;
+        })
+        .catch(error => console.error("Error loading header:", error));
+    </script>
+    <script src="login.js"></script>
+</body>
+</html>
