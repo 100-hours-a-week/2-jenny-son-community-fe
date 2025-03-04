@@ -7,31 +7,64 @@ html, body {
     background-color: #F4F5F7; 
 }
 
-.login {
+/* 헤더 */
+.header {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid black; 
+    position: relative;
+}
+
+.header-content {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.header-backsign {
+    font-size: 26px;
+    font-weight: 400;
+    text-align: center;
+    cursor: pointer;
+}
+
+.header-title {
+    font-size: 26px;
+    font-weight: 400;
+    text-align: center;
+    flex-grow: 1; 
+}
+
+
+.signin {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
-    padding: 100px;
+    padding: 50px;
 }
 
-/* 로그인 컨테이너 */
-.login-container {
+/* 회원가입 컨테이너 */
+.signin-container {
     width: 400px;
     padding: 20px;
     text-align: center;
 }
 
-/* 로그인 제목 */
-.login-title {
+/* 회원가입 제목 */
+.signin-title {
     font-size: 30px;
     font-weight: bold;
     margin-bottom: 30px;
 }
 
 /* 입력 필드 컨테이너 */
-.login-input-container {
+.signin-input-container {
     display: flex;
     flex-direction: column;
     gap: 0px; /* 이메일 요소와 비밀번호 요소 사이 거리 */
@@ -39,14 +72,14 @@ html, body {
 }
 
 /* 입력 필드 */
-.login-input p {
+.signin-input p {
     text-align: left;
     font-weight: bold;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     margin-top: 0px;
 }
 
-.login-input input {
+.signin-input input {
     width: 100%;
     padding: 10px;
     font-size: 16px;
@@ -57,7 +90,7 @@ html, body {
     box-sizing: border-box; /* 부모 크기를 초과하지 않도록 함 */
 }
 
-.login-input input:focus {
+.signin-input input:focus {
     border-color: #6a5acd;
 }
 
@@ -78,8 +111,8 @@ html, body {
     display: none;
 }
 
-/* 로그인 버튼 */
-.login-btn {
+/* 회원가입 버튼 */
+.signin-btn {
     width: 100%;
     background-color: #ACA0EB;
     color: white;
@@ -90,8 +123,8 @@ html, body {
     cursor: pointer;
 }
 
-/* 회원가입 버튼 */
-.signup-btn {
+/* 로그인 버튼 */
+.login-btn {
     width: 100%;
     color: black;
     background: none;
@@ -100,4 +133,41 @@ html, body {
     font-size: 15px;
     cursor: pointer;
     margin-top: 10px;
+}
+
+
+/* 프로필 이미지 업로드 버튼 */
+.profile-upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 40px;
+}
+
+.circle {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: #ccc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+
+.plus {
+    font-size: 40px;
+    color: #666;
+    font-weight: 100;
+}
+
+#profile-img-input {
+    display: none;
 }
