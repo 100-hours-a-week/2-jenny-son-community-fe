@@ -1,14 +1,15 @@
 <!DOCTYPE html>
-<html lang="kr">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello Community</title>
     <link rel="stylesheet" type="text/css" href="login.css">
-    <link rel="stylesheet" type="text/css" href="header.css">
 </head>
 <body>
-    <div id="header"></div>
+    <header class="header">
+        <div class="header-title">아무 말 대잔치</div>
+    </header>
     <div class="login">
         <div class="login-container">
             <div class="login-title">로그인</div>
@@ -33,14 +34,5 @@
             <button class="signup-btn">회원가입</button>
         </div>
     </div>
-    <script>
-        fetch("header.html")
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById("header").innerHTML = data;
-        })
-        .catch(error => console.error("Error loading header:", error));
-    </script>
-    <script src="login.js"></script>
 </body>
 </html>
