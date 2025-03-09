@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Community</title>
+    <link rel="stylesheet" type="text/css" href="post.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">아무 말 대잔치</div>
+            <div class="header-profile" alt="프로필">
+                <img src="/public/assets/profile.png"/>
+                <div class="header-dropdown">
+                    <div class="header-dropdown-item">
+                        회원정보수정
+                    </div>
+                    <div class="header-dropdown-item">
+                        비밀번호수정
+                    </div>
+                    <div class="header-dropdown-item">
+                        로그아웃
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- 본문 -->
+    <div class="postList">
+        <div class="postList-container">
+            <div class="postList-title">
+                <p>안녕하세요,<br>아무 말 대잔치 <strong>게시판</strong> 입니다.</p>
+            </div>
+            <div class="post-button">
+                <button>게시글 작성</button>
+            </div>
+            <div class="postList-content" id="postListContent">
+                <!-- 자바스크립트로 동적 로딩 -->
+            </div>
+        </div>
+    </div>
+    <script src="post.js"></script>
+</body>
+</html>

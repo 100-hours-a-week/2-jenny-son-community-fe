@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hello Community</title>
+    <link rel="stylesheet" type="text/css" href="edit-profile.css">
+</head>
+<body>
+    <!-- 헤더 -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-title">아무 말 대잔치</div>
+            <div class="header-profile" alt="프로필">
+                <img src="/public/assets/profile.png"/>
+                <div class="header-dropdown">
+                    <div class="header-dropdown-item">
+                        회원정보수정
+                    </div>
+                    <div class="header-dropdown-item">
+                        비밀번호수정
+                    </div>
+                    <div class="header-dropdown-item">
+                        로그아웃
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- 본문 -->
+    <div class="edit-profile">
+        <div class="edit-profile-container">
+            <div class="edit-profile-title">회원정보수정</div>
+            <div class="edit-profile-content">
+                <div class="edit-profile-item">
+                    <p>프로필 사진</p>
+                    <div class="profile-upload">
+                        <label for="profile-img-input" class="circle">
+                            <span class="change">변경</span>
+                        </label>
+                        <input type="file" id="profile-img-input" accept="image/*">
+                    </div>
+                </div>
+                <div class="edit-profile-item email-item">
+                    <p>이메일</p>
+                    <div class="email">startupcode@gmail.com</div>
+                </div>
+                <div class="edit-profile-item">
+                    <p>닉네임</p>
+                    <input type="text" autocomplete="off" placeholder="기존 닉네임" class="nickname-input">
+                    <div class="error-container">
+                        <div class="password-failure-message hide failure-message"></div>
+                    </div>
+                </div>
+            </div>
+            <button class="edit-btn">수정하기</button>
+            <button class="withdraw-btn">회원 탈퇴</button>
+            <div class="commit-btn">수정완료</div>
+        </div>
+    </div>
+    <!-- 모달 -->
+    <div class="modal-overlay">
+        <div class="modal-content">
+            <p class="modal-title">회원탈퇴 하시겠습니까?</p>
+            <p class="modal-text">작성된 게시글과 댓글은 삭제됩니다.</p>
+            <div class="modal-buttons">
+                <button class="modal-cancel">취소</button>
+                <button class="modal-confirm">확인</button>
+            </div>
+        </div>
+    </div>
+    <script src="edit-profile.js"></script>
+</body>
+</html>

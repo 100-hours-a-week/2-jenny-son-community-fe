@@ -1,0 +1,386 @@
+html, body {
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #F4F5F7; 
+}
+
+/* 헤더 */
+.header {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    padding: 16px 24px;
+    border-bottom: 1px solid black; 
+
+    /* 헤더가 고정되도록 함. (본문 스크롤해도 헤더가 보이도록) */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 999;
+    background-color: #F4F5F7; 
+}
+
+.header-content {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.header-title {
+    font-size: 26px;
+    font-weight: 400;
+    text-align: center;
+    flex-grow: 1; 
+}
+
+.header-profile {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative; /*프로필 아이콘 바로 아래에 드롭다운 위치*/
+}
+
+.header-profile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* 헤더 드롭다운 */
+.header-dropdown {
+    position: absolute; /*프로필 아이콘 바로 아래에 위치*/
+    top: calc(100% + 10px);  /*프로필 아이콘 아래 간격*/
+    right: 0; /*드롭다운 오른쪽 정렬*/
+    width: 150px;
+    background-color: #C7CAD1;
+    overflow: hidden;
+    pointer-events: none; /* 클릭 방지 */
+    visibility: hidden;
+    opacity: 0;
+    z-index: 9999;
+}
+
+.header-dropdown.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto; /* 클릭 가능 */
+}
+
+.header-dropdown-item {
+    cursor: pointer;
+    padding: 10px;
+    text-align: center;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.header-dropdown-item:hover {
+    background-color: #e9e9e9;
+}
+
+/* 본문 영역 */
+.post {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-grow: 1;
+    padding: 50px;
+    margin-top: 40px;  
+}
+
+/* 본문 내용 담긴 곳 */
+.post-container {
+    width: 600px;
+    padding: 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 게시글 제목 */
+.post-title {
+    width: 100%;
+    text-align: left;
+}
+
+/* 게시글 정보 */
+.post-info {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.author-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    font-size: 15px;
+}
+
+.profile-image-container {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 비율 유지하며 컨테이너를 가득 채우되, 넘치는 부분은 잘림 */
+    display: block;    /* 불필요한 공백 제거 */
+}
+
+.author-info time {
+    color: gray;
+}
+
+/* 작성자에게 보이는 게시글 수정, 삭제 버튼*/
+.author-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.author-actions button {
+    background: transparent;
+    border: 1px solid #ACA0EB;
+    border-radius: 10px;
+    padding: 1px 10px;
+    color: #000;
+    cursor: pointer;
+}
+
+/* 구분선 */
+hr {
+    width: 100%;
+    border: none; /* 기본 테두리 제거 */
+    border-top: 1px solid rgba(0, 0, 0, 0.16); /* 색상 #000에 투명도 16% */
+    margin: 20px 0;
+}
+
+/* 게시글 본문 영역 */
+.post-content {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #333;
+    margin: 10px 0;
+    padding: 0;
+    display: block;
+}
+
+.post-content p {
+    margin: 0 0 1em;  /* 아래쪽에 1em(글자 크기 기준) 여백 */  
+    white-space: pre-line; /* 텍스트 안의 줄바꿈 그대로 적용 */
+    text-align: left;
+}
+
+.post-content img {
+    max-width: 100%;
+    height: auto;   /* 비율 유지 */
+    display: block; /* 인라인 요소로 인한 아래 공백 제거 */
+    margin: 1em auto;
+}
+
+/* 게시글 반응 영역 (좋아요수 조회수, 댓글) */
+.post-reaction {
+    width: 500px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.reaction-item {
+    display: flex;
+    flex-direction: column;
+    width: 80px;
+    border: none;
+    background-color: #D9D9D9;
+    border-radius: 10px;
+    padding: 10px 0;
+    font-size: 14px;
+    gap: 3px;
+}
+
+
+/* 댓글 영역 (작성란, 댓글리스트 포함) */
+.post-comment {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* 댓글 작성란 */
+.comment-input-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+.comment-input-wrapper textarea {
+    width: 100%;
+    height: 100px;          /* 고정 높이 */
+    box-sizing: border-box;  /* padding, border가 height에 포함되도록 */
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.3s;
+    box-sizing: border-box; /* 부모 크기를 초과하지 않도록 함 */
+    font-size: 15px;
+    color: #333;
+    line-height: 1.5;
+}
+
+.comment-input-wrapper textarea:focus {
+    border-color: #6a5acd;
+}
+
+.comment-input-wrapper button {
+    width: 120px;
+    background-color: #ACA0EB;
+    border: none;
+    border-radius: 15px;
+    color: #fff;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+/* 댓글 리스트 */
+ul, li {
+    list-style: none; /* 기본 디자인 제거 */
+    margin: 0;
+    padding: 0;
+}
+
+.comment-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+/* 댓글 한 개 */
+.comment-item {
+    width: 100%;
+}
+
+.comment-item-head {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.comment-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+}
+
+.comment-item p {
+    text-align: left;
+    font-size: 16px;
+    line-height: 1.3;
+    color: #333;
+    white-space: pre-line; /* 텍스트 안의 줄바꿈 그대로 적용 */
+}
+
+
+/* 모달 배경 (기본적으로 숨김) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+}
+
+/* 모달 활성화 시 */
+.modal-overlay.active {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* 모달 창 스타일 */
+.modal-content {
+    background: white;
+    padding: 20px;
+    width: 320px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 모달 제목 */
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* 모달 설명 */
+.modal-text {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+}
+
+/* 버튼 컨테이너 */
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+}
+
+/* 취소 버튼 */
+.modal-cancel {
+    background: black;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* 확인 버튼 */
+.modal-confirm {
+    background: #C4A5FA;
+    color: black;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    font-size: 14px;
+    border-radius: 5px;
+    cursor: pointer;
+}
