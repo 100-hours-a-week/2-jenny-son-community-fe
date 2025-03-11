@@ -4,12 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hello Community</title>
+    <link rel="stylesheet" type="text/css" href="/src/components/header/header.css">
     <link rel="stylesheet" type="text/css" href="login.css">
 </head>
 <body>
-    <header class="header">
-        <div class="header-title">아무 말 대잔치</div>
-    </header>
+    <!-- 헤더 -->
+    <div id="header-container"></div>
+    <!-- 본문 -->
     <div class="login">
         <div class="login-container">
             <div class="login-title">로그인</div>
@@ -34,6 +35,20 @@
             <button class="signup-btn">회원가입</button>
         </div>
     </div>
+    <script>
+        // 헤더 동적 로드
+        fetch('/src/components/header/header.html')
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('header-container').innerHTML = html;
+            // 헤더 HTML 삽입 후 header.js 동적으로 로드
+            const script = document.createElement('script');
+            script.type = "module";
+            script.src = "/src/components/header/header.js";
+            document.body.appendChild(script);
+        })
+        .catch(err => console.error("헤더 불러오기 실패:", err));
+    </script>
     <script type="module" src="login.js"></script>
 </body>
 </html>

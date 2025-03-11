@@ -8,37 +8,9 @@ html, body {
 }
 
 /* 헤더 */
-.header {
-    display: flex;
-    justify-content: center; 
-    align-items: center;
-    padding: 16px 24px;
-    border-bottom: 1px solid black; 
-    position: relative;
+.header-profile {
+    display: none !important;
 }
-
-.header-content {
-    width: 100%;
-    max-width: 600px;
-    display: flex;
-    align-items: center;
-    position: relative;
-}
-
-.header-backsign {
-    font-size: 26px;
-    font-weight: 400;
-    text-align: center;
-    cursor: pointer;
-}
-
-.header-title {
-    font-size: 26px;
-    font-weight: 400;
-    text-align: center;
-    flex-grow: 1; 
-}
-
 
 .signup {
     display: flex;

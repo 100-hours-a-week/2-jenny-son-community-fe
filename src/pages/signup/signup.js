@@ -253,13 +253,3 @@ const elLoginButton = document.querySelector(".login-btn");
 elLoginButton.addEventListener("click", (event) => {
     window.location.href = "../login/login.html";
 })
-
-
-/* -----------------------------
-   * 5. 헤더 뒤로가기 버튼 기능 
-   * ----------------------------- */
-const elHeaderBackButton = document.querySelector(".header-backsign");
-
-elHeaderBackButton.addEventListener("click", (event) => {
-    window.location.href = "../login/login.html";
-})
