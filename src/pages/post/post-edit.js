@@ -1,27 +1,4 @@
 /* -----------------------------
-   * 0. 프로필 드롭다운 기능
-   * ----------------------------- */
-const profileBtn = document.querySelector(".header-profile");
-const dropdown = document.querySelector(".header-dropdown");
-
-// 프로필사진 클릭 시 열기
-profileBtn.addEventListener("click", (event) => {
-    console.log("프로필버튼클릭");
-    event.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
-    dropdown.classList.toggle("active");     
-    console.log("현재 드롭다운 클래스 목록:", dropdown.classList);
-    console.log("드롭다운 opacity:", window.getComputedStyle(dropdown).opacity);
-    console.log("드롭다운 visibility:", window.getComputedStyle(dropdown).visibility);
-})
-
-// 드롭다운 외부 클릭 시 닫기
-document.addEventListener("click", (event) => {
-    if (!profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
-        dropdown.classList.remove("active");
-    }
-})
-
-/* -----------------------------
    * 4. 게시글 수정 기능
    * ----------------------------- */
 const editBtn = document.querySelector(".edit-button");
