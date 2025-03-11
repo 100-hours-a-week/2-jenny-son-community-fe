@@ -22,18 +22,11 @@
       "profileImage": "/public/assets/goorm.png"
     },
     {
-      "id": "8fdd",
-      "email": "first@test.com",
-      "password": "first123!E",
-      "username": "first",
-      "profileImage": "/public/assets/soong.png"
-    },
-    {
       "id": "8a78",
       "email": "second@test.com",
       "password": "second123!E",
-      "username": "second",
-      "profileImage": "/public/assets/soong.png"
+      "username": "second3",
+      "profileImage": "/public/assets/goorm.png"
     },
     {
       "id": "d69a",

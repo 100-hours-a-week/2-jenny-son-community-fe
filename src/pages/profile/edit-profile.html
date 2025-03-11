@@ -16,7 +16,7 @@
             <div class="edit-profile-title">회원정보수정</div>
             <div class="edit-profile-content">
                 <div class="edit-profile-item">
-                    <p>프로필 사진</p>
+                    <p>프로필 사진*</p>
                     <div class="profile-upload">
                         <label for="profile-img-input" class="circle">
                             <span class="change">변경</span>
@@ -26,19 +26,19 @@
                 </div>
                 <div class="edit-profile-item email-item">
                     <p>이메일</p>
-                    <div class="email">startupcode@gmail.com</div>
+                    <div class="email">example@example.com</div>
                 </div>
                 <div class="edit-profile-item">
-                    <p>닉네임</p>
-                    <input type="text" autocomplete="off" placeholder="기존 닉네임" class="nickname-input">
+                    <p>닉네임*</p>
+                    <input type="text" autocomplete="off" placeholder="기존 닉네임" class="nickname-input" id="nickname">
                     <div class="error-container">
-                        <div class="password-failure-message hide failure-message"></div>
+                        <div class="nickname-failure-message hide failure-message"></div>
                     </div>
                 </div>
             </div>
-            <button class="edit-btn">수정하기</button>
+            <button type="button" class="edit-btn">수정하기</button>
             <button class="withdraw-btn">회원 탈퇴</button>
-            <div class="commit-btn">수정완료</div>
+            <div class="commit-message">수정완료</div>
         </div>
     </div>
     <!-- 모달 -->

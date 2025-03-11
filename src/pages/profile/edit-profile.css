@@ -124,7 +124,7 @@ html, body {
 }
 
 /* 수정완료 토스트메시지 */
-.commit-btn {
+.commit-message {
     width: 100px;
     background-color: #ACA0EB;
     color: white;
@@ -145,7 +145,7 @@ html, body {
 }
 
 /* 토스트 메시지가 나타날 때 */
-.commit-btn.show {
+.commit-message.show {
     opacity: 1;
     visibility: visible;
 }
