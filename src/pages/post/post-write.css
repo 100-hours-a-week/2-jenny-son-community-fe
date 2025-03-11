@@ -12,7 +12,7 @@ html, body {
     display: flex;
     justify-content: center; 
     align-items: center;
-    padding: 16px 24px;
+    padding: 16px 0px;
     border-bottom: 1px solid black; 
 
     /* 헤더가 고정되도록 함. (본문 스크롤해도 헤더가 보이도록) */
