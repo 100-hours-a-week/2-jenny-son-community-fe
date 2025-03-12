@@ -1,40 +1,14 @@
-
 /* -----------------------------
-   * 프로필 드롭다운 기능
-   * ----------------------------- */
-const profileBtn = document.querySelector(".header-profile");
-const dropdown = document.querySelector(".header-dropdown");
-
-// 프로필사진 클릭 시 열기
-profileBtn.addEventListener("click", (event) => {
-    console.log("프로필버튼클릭");
-    event.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
-    dropdown.classList.toggle("active");     
-    console.log("현재 드롭다운 클래스 목록:", dropdown.classList);
-    console.log("드롭다운 opacity:", window.getComputedStyle(dropdown).opacity);
-    console.log("드롭다운 visibility:", window.getComputedStyle(dropdown).visibility);
-})
-
-// 드롭다운 외부 클릭 시 닫기
-document.addEventListener("click", (event) => {
-    if (!profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
-        dropdown.classList.remove("active");
-    }
-})
-
-/* -----------------------------
-    * 인피니트 스크롤 기능
-    * ----------------------------- */
+* 1. 인피니트 스크롤 기능
+* ----------------------------- */
 const postListContent = document.querySelector(".postList-content");
 
 let currentCount = 0;  // 현재까지 불러온 게시글 수
 const limit = 10;      // 한 번에 불러올 게시글 개수
 let isLoading = false; // 중복 요청 방지 플래그
 
-// 기존 내용이 있다면 초기화
-postListContent.innerHTML = "";
-
 // 초기 게시글 10개 로드
+postListContent.innerHTML = ""; // 기존 내용이 있다면 초기화
 loadMorePosts();
 
 // 스크롤 이벤트 
@@ -49,6 +23,11 @@ function handleScroll() {
         loadMorePosts();
     }
 }
+
+
+/* -----------------------------
+* 2. 게시글 로드 (게시글 데이터 받아와서 화면 채우기)
+* ----------------------------- */
 
 // 게시글 로딩 함수 
 function loadMorePosts() {
@@ -93,6 +72,10 @@ function loadMorePosts() {
     isLoading = false; // 로딩 완료
 }
 
+
+/* -----------------------------
+* 3. 게시글 내용 표기 기능 
+* ----------------------------- */
 // 제목 26자까지만 자르는 함수 
 function truncateTitle (title, maxLen) {
     if (title.length > maxLen) {
@@ -110,19 +93,18 @@ function formatCount (number) {
     }
 }
 
-// 날짜 포맷
-
-
-
 
 /* -----------------------------
-    * 게시글 작성 버튼 기능
-    * ----------------------------- */
+* 4. 게시글 작성 버튼 기능
+* ----------------------------- */
 // 클릭하면 게시글 작성 페이지로 이동
-
+const elWriteButton = document.getElementById("post-write-btn");
+elWriteButton.addEventListener("click", ()=>{
+    window.location.href = "../post/post-write.html";
+})
 
 
 /* -----------------------------
-    * 카드 클릭 시 게시글 상세조회 이동 기능
-    * ----------------------------- */
+* 5. 카드 클릭 시 게시글 상세조회 이동 
+* ----------------------------- */
 // 클릭하면 상세 페이지로 이동

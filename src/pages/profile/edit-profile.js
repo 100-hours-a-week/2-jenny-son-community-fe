@@ -1,102 +1,179 @@
-/* 프로필 드롭다운 기능 */
-const profileBtn = document.querySelector(".header-profile");
-const dropdown = document.querySelector(".header-dropdown");
+/* -----------------------------
+* 1. 유저 정보로 화면 채우기
+* ----------------------------- */
+const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
 
-// 프로필사진 클릭 시 열기
-profileBtn.addEventListener("click", (event) => {
-    console.log("프로필버튼클릭");
-    event.stopPropagation(); // 클릭 이벤트가 부모 요소로 전파되는 것을 방지
-    dropdown.classList.toggle("active");     
-    console.log("현재 드롭다운 클래스 목록:", dropdown.classList);
-    console.log("드롭다운 opacity:", window.getComputedStyle(dropdown).opacity);
-    console.log("드롭다운 visibility:", window.getComputedStyle(dropdown).visibility);
-})
-
-// 드롭다운 외부 클릭 시 닫기
-document.addEventListener("click", (event) => {
-    if (!profileBtn.contains(event.target) && !dropdown.contains(event.target)) {
-        dropdown.classList.remove("active");
+if (loggedInUser && Object.keys(loggedInUser).length > 0) {
+    // 1. 프로필 이미지 설정
+    const elProfileUpload = document.querySelector(".profile-upload .circle");
+    if (elProfileUpload) {
+        if (loggedInUser.profileImage) {
+            elProfileUpload.style.backgroundImage = `url(${loggedInUser.profileImage})`;
+        } else {
+            elProfileUpload.style.backgroundColor = "#ccc"; // 기본 회색 배경
+        }
     }
-})
+
+    // 2. 이메일 표시 (텍스트로 보여주기)
+    const emailElement = document.querySelector(".edit-profile-item.email-item .email");
+    if (emailElement) {
+        emailElement.textContent = loggedInUser.email || "";
+    }
+
+    // 3. 닉네임 표시 (입력 필드에 기본값으로 채워넣기)
+    const nicknameInput = document.querySelector(".nickname-input");
+    if (nicknameInput) {
+        nicknameInput.value = loggedInUser.username || "";
+    }
+}
 
 
-/* 프로필 이미지 변경 기능 */
-const profileUpload = document.querySelector(".profile-upload .circle");
+/* -----------------------------
+* 2-1. 프로필 이미지 변경 기능
+* ----------------------------- */
 const profileInput = document.getElementById("profile-img-input");
-
-// 기존 프로필 이미지 설정
-let defaultProfileImage = "/public/assets/profile.png";
-profileUpload.style.backgroundImage = `url(${defaultProfileImage})`;
 
 // 파일 선택 시 이벤트 처리
 profileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
+    const elProfileUpload = document.querySelector(".profile-upload .circle");
 
     if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-            profileUpload.style.backgroundImage = `url(${e.target.result})`;
+            elProfileUpload.style.backgroundImage = `url(${e.target.result})`;
         };
         reader.readAsDataURL(file);
     } else {
-        profileUpload.style.backgroundImage = `url(${defaultProfileImage})`;
+        elProfileUpload.style.backgroundImage = `url(${defaultProfileImage})`;
     }
 })
 
 
+/* -----------------------------
+* 2-2. 닉네임 유효성 검사 함수 (수정하기 버튼 누르면 수행됨)
+* ----------------------------- */
+// 띄어쓰기 불가, 10글자 이내
+function nicknameValidChk(nickname) {
+    const elNicknameFailureMessage = document.querySelector(".nickname-failure-message");
+    
+    if (nickname.length > 0) {
+        if (nickname.includes(" ")) {
+            showErrorMessage("띄어쓰기를 없애주세요.");
+            return false;
+        } else if (nickname.length > 10) {
+            showErrorMessage("닉네임은 최대 10자까지 작성 가능합니다.");
+            return false;
+        } else {
+            elNicknameFailureMessage.classList.add('hide');
+            return true;
+        }
+    } else {
+        showErrorMessage("닉네임을 입력해주세요.");
+        return false;
+    }
+}
+
+// 오류 메시지 내용 변경하고 보여주는 함수
+function showErrorMessage(message) {
+    const elErrorMessage = document.querySelector(".nickname-failure-message");
+    console.log("오류 메시지 업데이트:", message);
+    elErrorMessage.textContent = `* ${message}`;
+    elErrorMessage.classList.remove("hide");
+}
+
+/* -----------------------------
+* 3. 수정하기 버튼 기능
+* ----------------------------- */
 /* 수정하기 요청 & 수정 완료 토스트 메시지 기능 */
-const editBtn = document.querySelector(".edit-btn");
-const nicknameInput = document.querySelector(".nickname-input");
-const errorMessage = document.querySelector(".error-container .failure-message");
-const toastMessage = document.querySelector(".commit-btn");
+const elEditBtn = document.querySelector(".edit-btn");
+const elErrorMessage = document.querySelector(".error-container .failure-message");
+const toastMessage = document.querySelector(".commit-message");
 
 // 수정하기 버튼 클릭 핸들러 
-editBtn.addEventListener("click", () => {
-    // 닉네임 유효성 검사
-    console.log(nicknameInput.value);
-    const nickname = nicknameInput.value.trim();
-    if (nickname === "") {
-        showErrorMessage("닉네임을 입력해주세요.");
-        return;
-    }
-    if (nickname.length > 10) {
-        showErrorMessage("닉네임은 최대 10자까지 작성 가능합니다.");
-        return;
-    }
+elEditBtn.addEventListener("click", async (event) => {
+    event.preventDefault();
+    elEditBtn.disabled = true;
 
-    editBtn.disabled = true;
-    errorMessage.classList.add("hide");
-    // 가상 요청
-    setTimeout(()=>{
-        if (nickname === "user123") {
+    const nicknameInput = document.querySelector(".nickname-input");
+    const newNickname = nicknameInput.value.trim();
+
+    console.log("입력된 닉네임: ", newNickname);
+
+    // 닉네임 유효성 검사
+    if (!nicknameValidChk(newNickname)) {
+        return;
+    }
+    elErrorMessage.classList.add("hide");
+
+    // localStorage에서 로그인한 사용자 정보 불러오기
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+    if (!loggedInUser.id) {
+        alert("로그인 정보가 없습니다.");
+        return;
+    }
+    showToastMessage();
+    try {
+        // json-server에서 사용자 목록 가져오기
+        const response = await fetch("http://localhost:3000/users");
+        if (!response.ok) {
+            throw new Error("사용자 데이터를 불러오는데 실패했습니다.");
+        }
+        const users = await response.json();
+
+        // 중복 닉네임인 경우 수정 실패
+        const duplicateUser = users.find(user => 
+            user.username === newNickname && user.id !== loggedInUser.id
+        );
+        if (duplicateUser) {
             showErrorMessage("중복된 닉네임입니다.");
-            editBtn.disabled = false;
             return;
         }
 
-        showToastMessage();
-    }, 500);
+        // 새 사용자 데이터 객체 생성
+        const updatedUser = {
+            ...loggedInUser,
+            username: newNickname,
+            profileImage: '/public/assets/goorm.png'
+        };
+
+        // json-server의 users 엔드포인트에 PATCH 요청 보내기
+        const patchResponse = await fetch(`http://localhost:3000/users/${loggedInUser.id}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(updatedUser)
+        });
+        // 위 코드가 새로고침을 유발해 토스트메시지가 보이다가 잘림.
+
+        if (patchResponse.ok) {
+            // 업데이트 성공 시 localStorage에 변경된 사용자 정보 저장
+            localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
+            // 수정 완료 토스트 메시지 표시 
+            showToastMessage();
+        } else {
+            alert("회원정보 수정에 실패하였습니다. 다시 시도해 주세요.");
+        }
+    } catch (error) {
+        console.error("회원정보 수정 오류:", error);
+        alert("회원정보 수정 중 오류가 발생했습니다.");
+    }
+    elEditBtn.disabled = false;
 });
 
-// 오류 메시지 보여주기
-function showErrorMessage(message) {
-    console.log("오류 메시지 업데이트:", message);
-    errorMessage.textContent = `* ${message}`;
-    errorMessage.classList.remove("hide");
-}
-
-// 토스트메시지 보여주기
+// 수정 성공 시 토스트메시지 보여주는 함수
 function showToastMessage() {
     toastMessage.classList.add("show");
 
     setTimeout(()=> {
         toastMessage.classList.remove("show");
-        editBtn.disabled = false;
     }, 2000); // 2초 후 사라짐
 }
 
-
-/** 회원탈퇴 기능 */
+/* -----------------------------
+* 4. 회원 탈퇴 기능
+* ----------------------------- */
 const withdrawBtn = document.querySelector(".withdraw-btn");
 const modalOverlay = document.querySelector(".modal-overlay");
 const modalCancel = document.querySelector(".modal-cancel");
@@ -119,9 +196,37 @@ modalOverlay.addEventListener("click", (event) => {
     }
 });
 
-// 확인 버튼 클릭 시 탈퇴 처리 (예제)
-modalConfirm.addEventListener("click", () => {
-    alert("회원 탈퇴가 완료되었습니다."); // 실제 탈퇴 API 연결 필요
-    modalOverlay.classList.remove("active");
-    // login 페이지로 이동 
+// 확인 버튼 클릭 시 회원 탈퇴 처리 
+modalConfirm.addEventListener("click", async () => {
+    // localStorage에서 로그인한 사용자 정보 가져오기
+    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+
+    // 로그인 정보가 없으면 탈퇴 진행 불가
+    if (!loggedInUser || !loggedInUser.id) {
+        alert("로그인 정보가 없습니다.");
+        return;
+    }
+
+    try {
+        // json-server에서 해당 사용자를 삭제
+        const response = await fetch(`http://localhost:3000/users/${loggedInUser.id}`, {
+            method: "DELETE"
+        });
+
+        if (response.ok) {
+            // 삭제 성공 시 로컬스토리지에서 사용자 정보 제거
+            localStorage.removeItem("loggedInUser");
+
+            alert("회원 탈퇴가 완료되었습니다.");
+            modalOverlay.classList.remove("active");
+
+            // 로그인 페이지로 이동
+            window.location.href = "../login/login.html";
+        } else {
+            alert("회원 탈퇴에 실패하였습니다. 다시 시도해 주세요.");
+        }
+    } catch (error) {
+        console.error("회원 탈퇴 오류:", error);
+        alert("회원 탈퇴 중 오류가 발생했습니다.");
+    }
 });

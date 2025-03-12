@@ -1,0 +1,24 @@
+{
+  "name": "2-jenny-son-community",
+  "version": "1.0.0",
+  "description": "3주차 과제: Html, Css, Vanilla JS로 커뮤니티 페이지 제작",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:json-server": "json-server --watch db.json --port 3000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/100-hours-a-week/2-jenny-son-community.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/100-hours-a-week/2-jenny-son-community/issues"
+  },
+  "homepage": "https://github.com/100-hours-a-week/2-jenny-son-community#readme",
+  "devDependencies": {
+    "json-server": "^1.0.0-beta.3"
+  }
+}
