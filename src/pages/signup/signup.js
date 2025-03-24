@@ -1,4 +1,5 @@
 import { emailValidChk, passwordValidChk } from '/src/utils/validation.js';
+import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
    * 1. 회원가입 버튼 활성화/비활성화 기능
@@ -179,68 +180,56 @@ const elSignupButton = document.querySelector(".signup-btn");
 elSignupButton.addEventListener("click", async (event) => {
     event.preventDefault();
     console.log("회원가입 버튼 클릭");
-    try { 
-        // json-server 이용 
-        const response = await fetch("http://localhost:3000/users");
-        const users = await response.json(); // [{id, email, password, username, profileImage}, ...]
-
-        const email = elInputEmail.value.trim();
-        const password = elInputPassword.value.trim();
-        const nickname = elInputNickname.value.trim();
-        const profileImage = "/public/assets/soong.png";
-
-        // 중복 이메일 검사
-        const duplicatedEmailUser = users.find((user) => user.email === email);
-        if (duplicatedEmailUser) {
-            // 이미 사용 중인 이메일
-            isEmailValid = false;
-            elEmailFailureMessage.textContent = "* 중복된 이메일입니다.";
-            elEmailFailureMessage.classList.remove("hide");
-            updateSignupButton(); 
-            return;
-        }
-
-        // 중복 닉네임 검사
-        const duplicatedNicknameUser = users.find((user) => user.username === nickname);
-        if (duplicatedNicknameUser) {
-            // 이미 사용 중인 닉네임
-            isNicknameValid = false;
-            elNicknameFailureMessage.textContent = "* 중복된 닉네임입니다.";
-            elNicknameFailureMessage.classList.remove("hide");
-            updateSignupButton(); 
-            return;
-        }
-
-        // 회원가입 성공
-        // 새 사용자 등록
-        const newUser = {
-            email: email,
-            password: password,
-            username: nickname,
-            profileImage: profileImage
-        }
-
-        // POST 요청으로 새 사용자 등록
-        const postResponse = await fetch("http://localhost:3000/users", {
-            method: "POST",
-            headers: {
-            "Content-Type": "application/json"
-            },
-            body: JSON.stringify(newUser)
-        });
     
-        if (postResponse.ok) {
+    const email = elInputEmail.value.trim();
+    const password = elInputPassword.value.trim();
+    const nickname = elInputNickname.value.trim();
+    const profileImageFile = elImageInput.files[0];
+
+    const elEmailFailureMessage = document.querySelector(".email-failure-message");
+    const elNicknameFailureMessage = document.querySelector(".nickname-failure-message");
+
+    // formData 생성
+    const formData = new FormData();
+    formData.append("profileImg", profileImageFile);
+    formData.append("email", email);
+    formData.append("password", password);
+    formData.append("nickname", nickname);
+    
+    console.log("file: ", profileImageFile);
+
+    try {
+        const response = await fetch(`${BASE_URL}/auth/register`, {
+            method: "POST",
+            body: formData,
+        });
+
+        const result = await response.json();
+
+        if (response.status === 201) {
+            // 성공
             if (confirm("회원가입에 성공했습니다!")) {
-                setTimeout(() => {
-                    console.log("로그인 페이지로 이동");
-                    window.location.href = "../login/login.html"; // 로그인 페이지로 이동
-                }, 100); // alert나 confirm 쓰면 로그인 페이지로 이동 안되는 이슈 있음
-            } 
+                window.location.href = "../login/login.html";
+            }
+        } else if (response.status === 409) {
+            // 중복된 이메일 or 닉네임
+            if (result.message.includes("이메일")) {
+                isEmailValid = false;
+                elEmailFailureMessage.textContent = "* " + result.message;
+                elEmailFailureMessage.classList.remove("hide");
+            } else if (result.message.includes("닉네임")) {
+                isNicknameValid = false;
+                elNicknameFailureMessage.textContent = "* " + result.message;
+                elNicknameFailureMessage.classList.remove("hide");
+            }
+            updateSignupButton();
         } else {
-            alert("회원가입 중 오류가 발생했습니다.");
+            // 그 외 오류
+            alert(result.message || "회원가입 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
     } catch (error) {
-        console.error("회원가입 오류:", error);
+        console.error("회원가입 요청 실패:", error);
+        alert("회원가입 요청에 실패했습니다. 서버를 확인해주세요.");
     }
 });
 
