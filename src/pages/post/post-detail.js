@@ -20,7 +20,10 @@ let isLiked = false;
 let likesCount = 0;
 
 /* -----------------------------
-  * 1. 게시글 상세 조회 
+  * 1. 페이지 로드 
+  * ----------------------------- */
+/* -----------------------------
+  * 1-1. 게시글 상세 조회 
   * ----------------------------- */
 async function fetchPostDetail() {
   try {
@@ -59,7 +62,68 @@ async function fetchPostDetail() {
   }
 }
 
-fetchPostDetail();
+
+/* -----------------------------
+  * 1-2. 댓글 목록 조회 
+  * ----------------------------- */
+async function fetchComments() {
+  try {
+    const response = await fetch(`${BASE_URL}/posts/${postId}/comments`);
+    const json = await response.json();
+
+    if (!response.ok) {
+      alert(json.message || "댓글을 불러오지 못했습니다.");
+      return;
+    }
+
+    const commentData = json.data;
+    const commentListData = commentData.commentList || [];
+
+    // 댓글 수 표시 업데이트
+    commentsCountElement.textContent = formatCount(commentData.commentCnt);
+
+    // 댓글 목록 초기화
+    commentList.innerHTML = "";
+
+    commentListData.forEach(comment => {
+      const li = document.createElement("li");
+      li.className = "comment-item";
+      li.innerHTML = `
+        <div class="comment-item-head">
+            <div class="author-info">
+                <div class="profile-image-container">
+                    <img class="profile-image" alt="댓글 작성자 프로필 사진" src="${comment.writerImg || "/public/assets/profile.png"}"/>
+                </div>
+                <span>${comment.writerName}</span>
+                <time datetime="${comment.createdAt}">${formatTime(comment.createdAt)}</time>
+            </div>
+            <div class="author-actions">
+                <button type="button" class="comment-edit-btn">수정</button>
+                <button type="button" class="comment-delete-btn">삭제</button>
+            </div>
+        </div>
+        <p class="comment-content">${comment.content}</p>
+      `;
+      commentList.appendChild(li);
+    });
+
+  } catch (err) {
+    console.error("댓글 목록 조회 실패:", err);
+    alert("댓글을 불러오는 중 오류가 발생했습니다.");
+  }
+}
+
+
+function updateLikeStyle() {
+  likesItem.style.cursor = "pointer";
+  likesItem.style.backgroundColor = isLiked ? "#ACA0EB" : "#D9D9D9";
+}
+
+
+// 불러오기
+fetchPostDetail().then(() => {
+  fetchComments(); 
+});
 
 
 /* -----------------------------
@@ -190,7 +254,7 @@ commentDeleteConfirmButton.addEventListener("click", () => {
   * 3. 게시글 수정/삭제 기능
   * ----------------------------- */
 /* -----------------------------
-  * 3-1. 게시글 삭제 모달 기능
+  * 3-1. 게시글 삭제 모달
   * ----------------------------- */
 const postDeleteButton = document.querySelector("#post-delete-button");
 const postDeleteModal = document.querySelector('#post-delete-modal');
@@ -226,6 +290,14 @@ postDeleteConfirmButton.addEventListener("click", () => {
 
 /* -----------------------------
   * 4. 좋아요 추가/삭제 기능
+  * ----------------------------- */
+/* -----------------------------
+  * 4-1. 좋아요 버튼 업데이트 
+  * ----------------------------- */
+
+
+/* -----------------------------
+  * 4-3. 좋아요 삭제 
   * ----------------------------- */
 likesItem.style.cursor = "pointer"; 
 
