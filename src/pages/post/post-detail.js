@@ -179,7 +179,39 @@ commentButton.addEventListener("click", async () => {
     if (!currentEditingComment) {
       console.log("등록할 댓글:", commentText);
 
-      
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+    
+      try {
+        const response = await fetch(`${BASE_URL}/posts/${postId}/comments`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ content: commentText })
+        });
+    
+        const json = await response.json();
+    
+        if (!response.ok) {
+          alert(json.message || "댓글 등록에 실패했습니다.");
+          return;
+        }
+    
+        // 성공
+        alert("댓글이 등록되었습니다.");
+        commentTextarea.value = "";
+        commentButton.disabled = true;
+        commentButton.style.backgroundColor = "#ACA0EB";
+        fetchComments(); // 댓글 목록 새로고침
+      } catch (err) {
+        console.error("댓글 등록 중 오류:", err);
+        alert("댓글 등록 중 오류가 발생했습니다.");
+      }
     }
     // 2. 댓글 수정
     else {
