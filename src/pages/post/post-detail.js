@@ -1,5 +1,72 @@
+import { formatCount, formatTime } from "/src/utils/format.js";
+import { BASE_URL } from "/src/utils/api.js";
+
+// URL에서 postId 추출
+const urlParams = new URLSearchParams(window.location.search);
+const postId = urlParams.get("postId");
+
+// DOM 요소들
+const titleElement = document.querySelector(".post-title h1");
+const profileImage = document.querySelector(".profile-image");
+const authorName = document.querySelector(".author-name");
+const createdAt = document.querySelector("time");
+const contentElement = document.querySelector(".post-content p");
+const likesCountElement = document.querySelectorAll(".reaction-item strong")[0];
+const viewsCountElement = document.querySelectorAll(".reaction-item strong")[1];
+const commentsCountElement = document.querySelectorAll(".reaction-item strong")[2];
+const likesItem = document.querySelectorAll(".reaction-item")[0];
+
+let isLiked = false;
+let likesCount = 0;
+
 /* -----------------------------
-  * 4. 댓글 등록 기능 + 5. 수정 기능 
+  * 1. 게시글 상세 조회 
+  * ----------------------------- */
+async function fetchPostDetail() {
+  try {
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, { headers });
+    const json = await response.json();
+
+    if (!response.ok) {
+      alert(json.message || "게시글을 불러오지 못했습니다.");
+      return;
+    }
+
+    const post = json.data;
+    const writer = post.writer;
+
+    // DOM 업데이트
+    titleElement.textContent = post.title;
+    profileImage.src = writer.writerImg || "/public/assets/profile.png";
+    authorName.textContent = writer.writerName;
+    createdAt.textContent = formatTime(post.createdAt);
+    createdAt.setAttribute("datetime", post.createdAt);
+    contentElement.textContent = post.content;
+    likesCountElement.textContent = formatCount(post.likeCnt);
+    viewsCountElement.textContent = formatCount(post.viewCnt);
+    commentsCountElement.textContent = formatCount(post.commentCnt);
+
+    isLiked = post.liked;
+    likesCount = post.likeCnt;
+    updateLikeStyle();
+
+  } catch (err) {
+    console.error("게시글 불러오기 실패:", err);
+    alert("오류가 발생했습니다.");
+  }
+}
+
+fetchPostDetail();
+
+
+/* -----------------------------
+  * 2. 댓글 작성/수정/삭제 기능
+  * ----------------------------- */
+/* -----------------------------
+  * 2-1. 댓글 작성 & 2-2. 댓글 수정
   * ----------------------------- */
 const commentTextarea = document.querySelector(".comment-input-wrapper textarea");
 const commentButton = document.querySelector(".comment-input-wrapper button");
@@ -72,7 +139,7 @@ function handleEditClick(event) {
 }
 
 /* -----------------------------
-  * 5-1. 댓글 삭제 기능
+  * 2-3. 댓글 삭제
   * ----------------------------- */
 let currentDeletingComment = null;
 const commentDeleteModal = document.querySelector('#comment-delete-modal');
@@ -120,7 +187,10 @@ commentDeleteConfirmButton.addEventListener("click", () => {
 
 
 /* -----------------------------
-  * 2-1. 게시글 삭제 모달 기능
+  * 3. 게시글 수정/삭제 기능
+  * ----------------------------- */
+/* -----------------------------
+  * 3-1. 게시글 삭제 모달 기능
   * ----------------------------- */
 const postDeleteButton = document.querySelector("#post-delete-button");
 const postDeleteModal = document.querySelector('#post-delete-modal');
@@ -155,13 +225,8 @@ postDeleteConfirmButton.addEventListener("click", () => {
 
 
 /* -----------------------------
-  * 3. 조회수와 댓글 숫자 포맷, 좋아요 버튼 기능
+  * 4. 좋아요 추가/삭제 기능
   * ----------------------------- */
-const likesItem = document.querySelectorAll(".reaction-item")[0];
-const likesCountElement = likesItem.querySelector("strong");
-
-let likesCount = parseInt(likesCountElement.textContent, 10) || 0;
-let isLiked = false;
 likesItem.style.cursor = "pointer"; 
 
 // 좋아요 버튼 클릭 이벤트
@@ -182,12 +247,3 @@ likesItem.addEventListener("click", () => {
     // 포맷 함수 적용하여 업데이트된 좋아요 수 표시
     likesCountElement.textContent = formatCount(likesCount);
 });
-
-// 숫자 포맷 함수
-function formatCount(num) {
-    if (num < 1000) {
-      return num.toString();
-    } else {
-      return Math.floor(num / 1000) + "k";
-    }
-  }
