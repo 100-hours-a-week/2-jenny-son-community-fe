@@ -1,11 +1,14 @@
+import { BASE_URL } from "/src/utils/api.js";
+
 /* -----------------------------
 * 1. 인피니트 스크롤 기능
 * ----------------------------- */
 const postListContent = document.querySelector(".postList-content");
 
-let currentCount = 0;  // 현재까지 불러온 게시글 수
-const limit = 10;      // 한 번에 불러올 게시글 개수
 let isLoading = false; // 중복 요청 방지 플래그
+
+let currentPage = 0;
+let isLastPage = false;
 
 // 초기 게시글 10개 로드
 postListContent.innerHTML = ""; // 기존 내용이 있다면 초기화
@@ -16,8 +19,10 @@ window.addEventListener("scroll", handleScroll);
 
 function handleScroll() {
     if ( // 화면의 하단 근처에 도달 && 아직 로딩 중이 아닐 때
-        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10
-      && !isLoading
+        window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10 && 
+        !isLoading &&
+        !isLastPage
+
     ) {
         isLoading = true;
         loadMorePosts();
@@ -30,67 +35,84 @@ function handleScroll() {
 * ----------------------------- */
 
 // 게시글 로딩 함수 
-function loadMorePosts() {
-    // 나중에 실제 서버에서 데이터 받아옴.
-    // 지금은 더미 데이터로 삽입 
-    // 더미 데이터 10개 
-    const newPosts = Array.from({ length: limit }, (_, index) => ({
-        id: index + 1,
-        title: `동해물과백두산이마르고닳도록하나님이보우하사우리나라만세`,
-        likes: 200000,
-        comments: 1050,
-        views: 999,
-        time: "2021-01-01 00:00:00",
-        author: `더미 작성자 ${index + 1}`,
-        profileImg: "/public/assets/profile.png"
-    }));
-
-    // 게시글 아이템 삽입 
-    newPosts.forEach(post => {
-        const postItem = document.createElement("div");
-        postItem.className = "postList-item";
-        postItem.innerHTML = `
-        <div class="post-title">${truncateTitle(post.title, 26)}</div>
-        <div class="post-info">
-            <div class="numbers">
-                <div>좋아요 ${formatCount(post.likes)}</div>
-                <div>댓글 ${formatCount(post.comments)}</div>
-                <div>조회수 ${formatCount(post.views)}</div>
+async function loadMorePosts() {
+    try {
+        const response = await fetch(`${BASE_URL}/posts?page=${currentPage}`);
+        const json = await response.json();
+    
+        if (!response.ok) {
+          alert(json.message || "게시글을 불러오지 못했습니다.");
+          return;
+        }
+    
+        const posts = json.data.posts;
+        const pageInfo = json.data;
+    
+        posts.forEach(post => {
+          const postItem = document.createElement("div");
+          postItem.className = "postList-item";
+          postItem.innerHTML = `
+            <div class="post-title">${truncateTitle(post.title, 26)}</div>
+            <div class="post-info">
+                <div class="numbers">
+                    <div>좋아요 ${formatCount(post.likeCnt)}</div>
+                    <div>댓글 ${formatCount(post.commentCnt)}</div>
+                    <div>조회수 ${formatCount(post.viewCnt)}</div>
+                </div>
+                <div class="time">${formatTime(post.createdAt)}</div>
             </div>
-            <div class="time">${post.time}</div>
-        </div>
-        <div class="post-innerline"></div>
-        <div class="post-author">
-            <img src="${post.profileImg}" class="author-img" alt="profile"/>
-            <div class="author-name">${post.author}</div>
-        </div>
-        `;
-        postListContent.appendChild(postItem);
-    });
-
-    currentCount += limit;
-    isLoading = false; // 로딩 완료
+            <div class="post-innerline"></div>
+            <div class="post-author">
+                <img src="${post.writerImg}" class="author-img" alt="profile"/>
+                <div class="author-name">${post.writerName}</div>
+            </div>
+          `;
+    
+          // 상세 페이지로 이동
+          postItem.addEventListener("click", () => {
+            window.location.href = `/src/pages/post/post-detail.html?postId=${post.postId}`;
+          });
+    
+          postListContent.appendChild(postItem);
+        });
+    
+        currentPage += 1;
+        isLastPage = pageInfo.last;
+        isLoading = false;
+    
+      } catch (error) {
+        console.error("게시글 로딩 실패:", error);
+        alert("게시글을 불러오는 중 오류가 발생했습니다.");
+      }
 }
 
 
 /* -----------------------------
-* 3. 게시글 내용 표기 기능 
+* 3. 유틸 함수
 * ----------------------------- */
 // 제목 26자까지만 자르는 함수 
 function truncateTitle (title, maxLen) {
-    if (title.length > maxLen) {
-        return title.substring(0, maxLen) + "...";
-    }
-    return title;
+    return title.length > maxLen ? title.substring(0, maxLen) + "..." : title;
 }
 
 // 좋아요수, 댓글수, 조회수를 변환하는 함수 
 function formatCount (number) {
-    if (number < 1000) {
-        return number.toString();
-    } else {
-        return Math.floor(number/1000) + "k";
-    }
+    return number < 1000 ? number.toString() : Math.floor(number / 1000) + "k"
+}
+
+// 시간 포맷 변환 함수
+function formatTime(isoTime) {
+    const date = new Date(isoTime);
+
+    const yyyy = date.getFullYear();
+    const MM = String(date.getMonth() + 1).padStart(2, "0");
+    const dd = String(date.getDate()).padStart(2, "0");
+
+    const HH = String(date.getHours()).padStart(2, "0");
+    const mm = String(date.getMinutes()).padStart(2, "0");
+    const ss = String(date.getSeconds()).padStart(2, "0");
+
+    return `${yyyy}-${MM}-${dd} ${HH}:${mm}:${ss}`;
 }
 
 
@@ -99,12 +121,6 @@ function formatCount (number) {
 * ----------------------------- */
 // 클릭하면 게시글 작성 페이지로 이동
 const elWriteButton = document.getElementById("post-write-btn");
-elWriteButton.addEventListener("click", ()=>{
+elWriteButton.addEventListener("click", () => {
     window.location.href = "../post/post-write.html";
 })
-
-
-/* -----------------------------
-* 5. 카드 클릭 시 게시글 상세조회 이동 
-* ----------------------------- */
-// 클릭하면 상세 페이지로 이동
