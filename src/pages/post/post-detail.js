@@ -101,6 +101,7 @@ async function fetchComments() {
     commentListData.forEach(comment => {
       const li = document.createElement("li");
       li.className = "comment-item";
+      li.dataset.commentId = comment.commentId;
       
       const author = comment.author;
 
@@ -119,8 +120,7 @@ async function fetchComments() {
               <button type="button" class="comment-delete-btn">삭제</button>
             </div>` : ""}
         </div>
-        <p class="comment-content" data-comment-id="${comment.commentId}">${comment.content}</p>
-      `;
+        <p class="comment-content">${comment.content}</p>`;
 
       commentList.appendChild(li);
     });
@@ -225,7 +225,7 @@ commentButton.addEventListener("click", async () => {
     }
     // 2. 댓글 수정
     else {
-      const commentId = currentEditingComment.dataset.commentId;
+      const commentId = currentEditingComment.closest(".comment-item").dataset.commentId;
       const token = localStorage.getItem("token");
       if (!token) {
         alert("로그인이 필요합니다.");
@@ -250,7 +250,6 @@ commentButton.addEventListener("click", async () => {
         }
     
         alert("댓글이 수정되었습니다.");
-        commentButton.textContent = "댓글 등록";
         currentEditingComment = null;
     
         fetchComments(); // 최신 댓글 목록 불러오기
@@ -269,13 +268,8 @@ function resetCommentInput() {
   commentTextarea.value = "";
   commentButton.disabled = true;
   commentButton.style.backgroundColor = "#ACA0EB";
+  commentButton.textContent = "댓글 등록";
 }
-
-// 댓글 아이템 수정 버튼 이벤트 등록 
-const editButtons = document.querySelectorAll(".comment-edit-btn");
-editButtons.forEach(btn => {
-btn.addEventListener("click", handleEditClick);
-});
 
 // 댓글 아이템 수정 버튼 클릭 이벤트 핸들링
 function handleEditClick(event) {
@@ -295,56 +289,71 @@ function handleEditClick(event) {
 /* -----------------------------
   * 2-3. 댓글 삭제
   * ----------------------------- */
+ // 삭제할 댓글 요소 저장
 let currentDeletingComment = null;
+
+// 모달 관련 DOM
 const commentDeleteModal = document.querySelector('#comment-delete-modal');
 const commentDeleteCancelButton = commentDeleteModal.querySelector(".modal-cancel");
 const commentDeleteConfirmButton = commentDeleteModal.querySelector(".modal-confirm");
 
-// 댓글 삭제 버튼 클릭 이벤트 등록
-const deleteButtons = document.querySelectorAll(".comment-delete-btn");
-deleteButtons.forEach(button => {
-    button.addEventListener("click", (event) => {
-        // 삭제할 댓글 아이템(li 요소) 선택
-        const li = event.target.closest(".comment-item");
-        currentDeletingComment = li;
-
-        console.log("댓글 삭제 버튼 클릭: ", li)
-
-        // 댓글 삭제 모달 표시
-        commentDeleteModal.classList.add("active"); 
-    });
-});
-
-// 모달 취소 버튼 클릭 시 모달 닫기 
-commentDeleteCancelButton.addEventListener("click", () => {
-  commentDeleteModal.classList.remove("active");
-  currentDeletingComment = null;
-});
-
-// 모달 외부 클릭 시 모달 닫기
-commentDeleteModal.addEventListener("click", (event) => {
-  if (event.target === commentDeleteModal) {
-    commentDeleteModal.classList.remove("active");
-  }
-});
-
-// 모달 확인 버튼 클릭 시 삭제 요청 후 댓글 아이템 삭제, 모달 숨김
-commentDeleteConfirmButton.addEventListener("click", () => {
-  if (currentDeletingComment) {
-    // 댓글 삭제 요청 성공 시
-    alert("댓글이 삭제되었습니다.");
-    currentDeletingComment.remove();
-    currentDeletingComment = null;
-  }
-  commentDeleteModal.classList.remove("active");
-});
-
+// 삭제 버튼 누를 시, 삭제 모달을 열기
 function handleDeleteClick(event) {
   const li = event.target.closest(".comment-item");
   currentDeletingComment = li;
   commentDeleteModal.classList.add("active");
 }
 
+
+// 모달의 취소 버튼 클릭 시, 모달 닫기 
+commentDeleteCancelButton.addEventListener("click", () => {
+  commentDeleteModal.classList.remove("active");
+  currentDeletingComment = null;
+});
+
+// 모달의 외부 클릭 시, 모달 닫기
+commentDeleteModal.addEventListener("click", (event) => {
+  if (event.target === commentDeleteModal) {
+    commentDeleteModal.classList.remove("active");
+    currentDeletingComment = null;
+  }
+});
+
+// 모달의 확인 버튼 클릭 시, DELETE 요청 보냄
+commentDeleteConfirmButton.addEventListener("click", async () => {
+  if (currentDeletingComment) {
+    const commentId = currentDeletingComment.dataset.commentId;
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${BASE_URL}/posts/${postId}/comments/${commentId}`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      const json = await response.json();
+
+      if (!response.ok) {
+        alert(json.message || "댓글 삭제에 실패했습니다.");
+        return;
+      }
+
+      alert("댓글이 삭제되었습니다.");
+      commentDeleteModal.classList.remove("active");
+      currentDeletingComment = null;
+      fetchComments(); // 최신 댓글 목록 다시 불러오기
+    } catch (err) {
+      console.error("댓글 삭제 중 오류:", err);
+      alert("댓글 삭제 중 오류가 발생했습니다.");
+    }
+  }
+});
 
 
 /* -----------------------------
