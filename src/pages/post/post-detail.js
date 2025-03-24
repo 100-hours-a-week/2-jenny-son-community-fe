@@ -135,12 +135,6 @@ async function fetchComments() {
 }
 
 
-function updateLikeStyle() {
-  likesItem.style.cursor = "pointer";
-  likesItem.style.backgroundColor = isLiked ? "#ACA0EB" : "#D9D9D9";
-}
-
-
 function attachCommentEventListeners() {
   document.querySelectorAll(".comment-edit-btn").forEach(btn => {
     btn.addEventListener("click", handleEditClick);
@@ -393,35 +387,60 @@ postDeleteConfirmButton.addEventListener("click", () => {
 });
 
 
-
 /* -----------------------------
   * 4. 좋아요 추가/삭제 기능
   * ----------------------------- */
-/* -----------------------------
-  * 4-1. 좋아요 버튼 업데이트 
-  * ----------------------------- */
+likesItem.addEventListener("click", async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
 
+  try {
+    let response;
 
-/* -----------------------------
-  * 4-3. 좋아요 삭제 
-  * ----------------------------- */
-likesItem.style.cursor = "pointer"; 
-
-// 좋아요 버튼 클릭 이벤트
-likesItem.addEventListener("click", () => {
     if (!isLiked) {
-      // 비활성 상태에서 클릭: 활성화, 카운트 +1, 색상 변경
-      isLiked = true;
-      likesCount++;
-      likesItem.style.backgroundColor = "#ACA0EB";
+      // 좋아요 추가 요청
+      response = await fetch(`${BASE_URL}/posts/${postId}/like`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
     } else {
-      // 활성 상태에서 클릭: 비활성화, 카운트 -1, 색상 변경
-      isLiked = false;
-      likesCount--;
-      likesItem.style.backgroundColor = "#D9D9D9";
+      // 좋아요 삭제 요청
+      response = await fetch(`${BASE_URL}/posts/${postId}/like`, {
+        method: "DELETE",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
     }
-    // 요청
-    
-    // 포맷 함수 적용하여 업데이트된 좋아요 수 표시
-    likesCountElement.textContent = formatCount(likesCount);
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      alert(json.message || "좋아요 요청에 실패했습니다.");
+      return;
+    }
+
+    // 성공 처리
+    isLiked = !isLiked;
+    likesCount = isLiked ? likesCount + 1 : Math.max(likesCount - 1, 0);
+
+    updateLikeStyle(); // 색상 변경
+    likesCountElement.textContent = formatCount(likesCount); // 숫자 반영
+
+  } catch (err) {
+    console.error("좋아요 요청 중 오류:", err);
+    alert("좋아요 요청 중 오류가 발생했습니다.");
+  }
 });
+
+
+// 좋아요 버튼 스타일 변경
+function updateLikeStyle() {
+  likesItem.style.cursor = "pointer";
+  likesItem.style.backgroundColor = isLiked ? "#ACA0EB" : "#D9D9D9";
+}
