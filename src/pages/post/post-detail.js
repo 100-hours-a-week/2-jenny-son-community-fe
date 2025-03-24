@@ -15,6 +15,8 @@ const likesCountElement = document.querySelectorAll(".reaction-item strong")[0];
 const viewsCountElement = document.querySelectorAll(".reaction-item strong")[1];
 const commentsCountElement = document.querySelectorAll(".reaction-item strong")[2];
 const likesItem = document.querySelectorAll(".reaction-item")[0];
+const postEditButton = document.querySelector("#post-edit-button");
+const postDeleteButton = document.querySelector("#post-delete-button");
 
 let isLiked = false;
 let likesCount = 0;
@@ -54,7 +56,13 @@ async function fetchPostDetail() {
 
     isLiked = post.liked;
     likesCount = post.likeCnt;
-    updateLikeStyle();
+    updateLikeStyle(); // 좋아요 반영
+
+    // 작성자 여부에 따라 수정/삭제 버튼 제어
+    if (!post.author) {
+      postEditButton.style.display = "none";
+      postDeleteButton.style.display = "none";
+    }
 
   } catch (err) {
     console.error("게시글 불러오기 실패:", err);
@@ -68,7 +76,10 @@ async function fetchPostDetail() {
   * ----------------------------- */
 async function fetchComments() {
   try {
-    const response = await fetch(`${BASE_URL}/posts/${postId}/comments`);
+    const token = localStorage.getItem("token");
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+    const response = await fetch(`${BASE_URL}/posts/${postId}/comments`, { headers });
     const json = await response.json();
 
     if (!response.ok) {
@@ -79,6 +90,8 @@ async function fetchComments() {
     const commentData = json.data;
     const commentListData = commentData.commentList || [];
 
+    console.log(commentData);
+
     // 댓글 수 표시 업데이트
     commentsCountElement.textContent = formatCount(commentData.commentCnt);
 
@@ -88,22 +101,27 @@ async function fetchComments() {
     commentListData.forEach(comment => {
       const li = document.createElement("li");
       li.className = "comment-item";
+      
+      const author = comment.author;
+
       li.innerHTML = `
         <div class="comment-item-head">
-            <div class="author-info">
-                <div class="profile-image-container">
-                    <img class="profile-image" alt="댓글 작성자 프로필 사진" src="${comment.writerImg || "/public/assets/profile.png"}"/>
-                </div>
-                <span>${comment.writerName}</span>
-                <time datetime="${comment.createdAt}">${formatTime(comment.createdAt)}</time>
-            </div>
+          <div class="author-info">
+              <div class="profile-image-container">
+                  <img class="profile-image" alt="댓글 작성자 프로필 사진" src="${comment.writerImg || "/public/assets/profile.png"}"/>
+              </div>
+              <span>${comment.writerName}</span>
+              <time datetime="${comment.createdAt}">${formatTime(comment.createdAt)}</time>
+          </div>
+          ${author ? `
             <div class="author-actions">
-                <button type="button" class="comment-edit-btn">수정</button>
-                <button type="button" class="comment-delete-btn">삭제</button>
-            </div>
+              <button type="button" class="comment-edit-btn">수정</button>
+              <button type="button" class="comment-delete-btn">삭제</button>
+            </div>` : ""}
         </div>
         <p class="comment-content">${comment.content}</p>
       `;
+
       commentList.appendChild(li);
     });
 
@@ -153,17 +171,15 @@ commentTextarea.addEventListener("blur", () => {
 })
 
 // 댓글 등록/수정 버튼 클릭 이벤트 핸들링 
-commentButton.addEventListener("click", () => {
+commentButton.addEventListener("click", async () => {
     const commentText = commentTextarea.value.trim();
     if (commentText.length === 0) return;
 
     // 1. 댓글 등록 
     if (!currentEditingComment) {
-        console.log("등록할 댓글:", commentText);
-        // 댓글 등록 요청
+      console.log("등록할 댓글:", commentText);
 
-
-        // 댓글 등록 성공 시 댓글 리스트 업데이트
+      
     }
     // 2. 댓글 수정
     else {
@@ -256,7 +272,7 @@ commentDeleteConfirmButton.addEventListener("click", () => {
 /* -----------------------------
   * 3-1. 게시글 삭제 모달
   * ----------------------------- */
-const postDeleteButton = document.querySelector("#post-delete-button");
+// const postDeleteButton = document.querySelector("#post-delete-button");
 const postDeleteModal = document.querySelector('#post-delete-modal');
 const postDeleteCancelButton = postDeleteModal.querySelector(".modal-cancel");
 const postDeleteConfirmButton = postDeleteModal.querySelector(".modal-confirm");
