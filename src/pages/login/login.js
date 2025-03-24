@@ -1,3 +1,5 @@
+import { BASE_URL } from "/src/utils/api.js";
+
 /* -----------------------------
    * 1-1. 이메일 & 비밀번호 유효성 검사 함수
    * ----------------------------- */
@@ -84,24 +86,45 @@ elButtonLogin.addEventListener("click", async (event) => {
     const password = elInputPassword.value.trim();
 
     try {
-        // json-server를 통해 사용자 목록 가져와서 사용자 확인
-        const response = await fetch("http://localhost:3000/users");
-        if (!response.ok) {
-            throw new Error(`서버 통신 실패: ${response.status}`);
-        }
+        const response = await fetch(`${BASE_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email,
+                password
+            })
+        });
 
-        const users = await response.json();
-        const user = users.find((user) => user.email === email && user.password === password);
+        const result = await response.json();
 
-        if (user) {
-            // 로그인 성공 시 로컬 스토리지에 사용자 정보 저장, post 페이지로 이동
-            localStorage.setItem("loggedInUser", JSON.stringify(user));
-            window.location.href = "../post/post.html";
+        if (response.ok) {
+            // 로그인 성공
+            const { user, token } = result.data;
+
+            // 로컬스토리지에 저장
+            localStorage.setItem("user", JSON.stringify(user));
+            localStorage.setItem("token", token);
+
+            // 다음 페이지로 이동
+            alert("로그인에 성공했습니다!");
+            window.location.href = "/src/pages/post/post.html"; // 이동 경로는 원하는 곳으로 바꿔도 됨
         } else {
+            // 로그인 실패 처리
+            if (response.status === 401) {
+                elLoginFailureMessage.textContent = "* 비밀번호가 올바르지 않습니다.";
+            } else if (response.status === 404) {
+                elLoginFailureMessage.textContent = "* 등록되지 않은 이메일입니다.";
+            } else {
+                alert(result.message || "로그인 중 오류가 발생했습니다. 다시 시도해주세요.");
+            }
             elLoginFailureMessage.classList.remove("hide");
         }
     } catch (error) {
-        console.error("로그인 오류:", error);
+        console.error("로그인 요청 실패:", error);
+        alert("회원가입 요청에 실패했습니다. 서버를 확인해주세요.");
+        elLoginFailureMessage.classList.remove("hide");
     }
 });
 
