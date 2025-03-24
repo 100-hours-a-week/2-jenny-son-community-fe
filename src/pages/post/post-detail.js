@@ -119,11 +119,14 @@ async function fetchComments() {
               <button type="button" class="comment-delete-btn">삭제</button>
             </div>` : ""}
         </div>
-        <p class="comment-content">${comment.content}</p>
+        <p class="comment-content" data-comment-id="${comment.commentId}">${comment.content}</p>
       `;
 
       commentList.appendChild(li);
     });
+
+    // 버튼 이벤트 등록
+    attachCommentEventListeners();
 
   } catch (err) {
     console.error("댓글 목록 조회 실패:", err);
@@ -135,6 +138,16 @@ async function fetchComments() {
 function updateLikeStyle() {
   likesItem.style.cursor = "pointer";
   likesItem.style.backgroundColor = isLiked ? "#ACA0EB" : "#D9D9D9";
+}
+
+
+function attachCommentEventListeners() {
+  document.querySelectorAll(".comment-edit-btn").forEach(btn => {
+    btn.addEventListener("click", handleEditClick);
+  });
+  document.querySelectorAll(".comment-delete-btn").forEach(btn => {
+    btn.addEventListener("click", handleDeleteClick);
+  });
 }
 
 
@@ -204,9 +217,6 @@ commentButton.addEventListener("click", async () => {
     
         // 성공
         alert("댓글이 등록되었습니다.");
-        commentTextarea.value = "";
-        commentButton.disabled = true;
-        commentButton.style.backgroundColor = "#ACA0EB";
         fetchComments(); // 댓글 목록 새로고침
       } catch (err) {
         console.error("댓글 등록 중 오류:", err);
@@ -215,19 +225,51 @@ commentButton.addEventListener("click", async () => {
     }
     // 2. 댓글 수정
     else {
-        // 댓글 수정 요청
-        // 요청 성공 시 
-        currentEditingComment.textContent = commentText;
+      const commentId = currentEditingComment.dataset.commentId;
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("로그인이 필요합니다.");
+        return;
+      }
+    
+      try {
+        const response = await fetch(`${BASE_URL}/posts/${postId}/comments/${commentId}`, {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({ content: commentText })
+        });
+    
+        const json = await response.json();
+    
+        if (!response.ok) {
+          alert(json.message || "댓글 수정에 실패했습니다.");
+          return;
+        }
+    
+        alert("댓글이 수정되었습니다.");
         commentButton.textContent = "댓글 등록";
         currentEditingComment = null;
-
+    
+        fetchComments(); // 최신 댓글 목록 불러오기
+    
+      } catch (err) {
+        console.error("댓글 수정 중 오류:", err);
+        alert("댓글 수정 중 오류가 발생했습니다.");
+      }
     }
 
     // 입력란 초기화 및 버튼 상태 리셋
-    commentTextarea.value = "";
-    commentButton.disabled = true;
-    commentButton.style.backgroundColor = "#ACA0EB";
+    resetCommentInput();
 })
+
+function resetCommentInput() {
+  commentTextarea.value = "";
+  commentButton.disabled = true;
+  commentButton.style.backgroundColor = "#ACA0EB";
+}
 
 // 댓글 아이템 수정 버튼 이벤트 등록 
 const editButtons = document.querySelectorAll(".comment-edit-btn");
@@ -296,6 +338,13 @@ commentDeleteConfirmButton.addEventListener("click", () => {
   }
   commentDeleteModal.classList.remove("active");
 });
+
+function handleDeleteClick(event) {
+  const li = event.target.closest(".comment-item");
+  currentDeletingComment = li;
+  commentDeleteModal.classList.add("active");
+}
+
 
 
 /* -----------------------------
