@@ -1,8 +1,8 @@
 import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
-* 1. 비밀번호 & 비밀번호 확인 유효성 검사
-* ----------------------------- */
+ * 1. 비밀번호 & 비밀번호 확인 유효성 검사
+ * ----------------------------- */
 const passwordInputs = document.querySelectorAll('.password-input');
 const passwordInput = passwordInputs[0];  // 첫 번째 입력 필드
 const passwordCheckInput = passwordInputs[1];  // 두 번째 입력 필드
@@ -13,11 +13,11 @@ const passwordCheckErrorMessage = document.querySelectorAll('.password-failure-m
 const editBtn = document.querySelector('.edit-btn');
 const toastMessage = document.querySelector(".commit-btn");
 
-/* 비밀번호 입력 검사 */
+// 비밀번호 입력 검사
+// 사용자가 입력할 때마다 유효성 검사 실행
 let isPasswordValid = false;
 let isPasswordCheckValid = false;
 
-// 사용자가 입력할 때마다 유효성 검사 실행
 passwordInput.addEventListener("blur", validatePassword); // blur: 사용자가 입력을 마치면 검사한다. 
 passwordCheckInput.addEventListener("blur", validatePassword);
 
@@ -81,8 +81,9 @@ function validatePassword() {
 }
 
 /* -----------------------------
-* 2. 비밀번호 수정하기 버튼 기능
-* ----------------------------- */
+ * 2. 비밀번호 수정
+ * ----------------------------- */
+// 비밀번호 수정 버튼을 누르면, 비밀번호 변경 요청을 보낸다.
 editBtn.addEventListener("click", async () => {
     editBtn.disabled = true;
     
@@ -91,7 +92,7 @@ editBtn.addEventListener("click", async () => {
 
     if (!token) {
         alert("로그인이 필요합니다.");
-        window.location.href = "../login/login.html";
+        window.location.href = "/src/pages/login/login.html";
         return;
     }
 
@@ -110,7 +111,7 @@ editBtn.addEventListener("click", async () => {
         if (response.status === 401) {
             alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
             localStorage.removeItem("token");
-            window.location.href = "../login/login.html";
+            window.location.href = "/src/pages/login/login.html";
             return;
         }
 
@@ -120,7 +121,8 @@ editBtn.addEventListener("click", async () => {
             return;
         }
 
-        showToastMessage(); // 성공 시 토스트 메시지 표시
+        // 성공 시 토스트 메시지를 표시하고, 입력폼을 비운다. 
+        showToastMessage(); 
         passwordInput.value = "";
         passwordCheckInput.value = "";
 
@@ -132,7 +134,7 @@ editBtn.addEventListener("click", async () => {
 });
 
 
-// 토스트메시지 보여주기
+// 토스트 메시지 보여주기
 function showToastMessage() {
     toastMessage.classList.add("show");
 

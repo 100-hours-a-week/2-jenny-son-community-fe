@@ -1,12 +1,8 @@
 import { BASE_URL } from "/src/utils/api.js";
-
-/* -----------------------------
-   * 1-1. 이메일 & 비밀번호 유효성 검사 함수
-   * ----------------------------- */
 import { emailValidChk, passwordValidChk } from '/src/utils/validation.js';
 
 /* -----------------------------
-   * 1-2. 이메일 & 비밀번호 입력 및 유효성 검사 기능
+   * 1. 이메일 & 비밀번호 입력 및 유효성 검사 
    * ----------------------------- */
 let elInputEmail = document.querySelector('#email'); // input#email
 let elEmailFailureMessage = document.querySelector('.email-failure-message'); 
@@ -75,10 +71,10 @@ function updateLoginButton(isEmailValid, isPasswordValid) {
 
 
 /* -----------------------------
-   * 2. 로그인 버튼 기능 
+   * 2. 로그인 기능 
    * ----------------------------- */
-// 로그인을 수행하고, 로그인 성공 시 post 페이지로 이동한다.
-// 요청 보내서 인증. 성공하면 로컬스토리지에 저장. 
+// 로그인 요청을 보낸다.
+// 로그인 성공 시 로컬스토리지에 유저정보와 토큰 저장하고, 게시글 목록 페이지로 이동한다.
 elButtonLogin.addEventListener("click", async (event) => {
     event.preventDefault();
 
@@ -107,9 +103,9 @@ elButtonLogin.addEventListener("click", async (event) => {
             localStorage.setItem("user", JSON.stringify(user));
             localStorage.setItem("token", token);
 
-            // 다음 페이지로 이동
+            // 게시글 목록 페이지로 이동
             alert("로그인에 성공했습니다!");
-            window.location.href = "/src/pages/post/post.html"; // 이동 경로는 원하는 곳으로 바꿔도 됨
+            window.location.href = "/src/pages/post/post.html"; 
         } else {
             // 로그인 실패 처리
             if (response.status === 401) {
@@ -130,11 +126,10 @@ elButtonLogin.addEventListener("click", async (event) => {
 
 
 /* -----------------------------
-   * 3. 회원가입 버튼 기능 
+   * 3. 회원가입 페이지 이동
    * ----------------------------- */
-// 회원가입 페이지로 이동한다. 
+// 회원가입 버튼을 누르면 회원가입 페이지로 이동한다. 
 const signupButton = document.querySelector(".signup-btn");
-
 signupButton.addEventListener("click", (event) => {
-    window.location.href = "../signup/signup.html";
+    window.location.href = "/src/pages/signup/signup.html";
 });

@@ -23,11 +23,14 @@ let isLiked = false;
 let likesCount = 0;
 
 /* -----------------------------
-  * 1. 페이지 로드 
-  * ----------------------------- */
+ * 1. 페이지 로드 
+ * ----------------------------- */
+
 /* -----------------------------
-  * 1-1. 게시글 상세 조회 
-  * ----------------------------- */
+ * 1-1. 게시글 상세 조회 
+ * ----------------------------- */
+// 게시글 조회 요청
+// 서버에서 게시글 상세 정보를 불러와 화면에 표시한다. 
 async function fetchPostDetail() {
   try {
     const token = localStorage.getItem("token");
@@ -38,7 +41,7 @@ async function fetchPostDetail() {
 
     if (!response.ok) {
       alert(json.message || "게시글을 불러오지 못했습니다.");
-      window.location.href = "../post/post.html";
+      window.location.href = "/src/pages/post/post.html";
       return;
     }
 
@@ -74,8 +77,10 @@ async function fetchPostDetail() {
 
 
 /* -----------------------------
-  * 1-2. 댓글 목록 조회 
-  * ----------------------------- */
+ * 1-2. 댓글 목록 조회 
+ * ----------------------------- */
+// 댓글 목록 조회 요청
+// 서버에서 댓글 목록을 불러와 화면에 표시한다.  
 async function fetchComments() {
   try {
     const token = localStorage.getItem("token");
@@ -147,7 +152,6 @@ function attachCommentEventListeners() {
   });
 }
 
-
 // 불러오기
 fetchPostDetail().then(() => {
   fetchComments(); 
@@ -155,20 +159,21 @@ fetchPostDetail().then(() => {
 
 
 /* -----------------------------
-  * 2. 댓글 작성/수정/삭제 기능
-  * ----------------------------- */
+ * 2. 댓글 작성/수정/삭제 기능
+ * ----------------------------- */
+
 /* -----------------------------
-  * 2-1. 댓글 작성 & 2-2. 댓글 수정
-  * ----------------------------- */
+ * 2-1. 댓글 작성 & 2-2. 댓글 수정
+ * ----------------------------- */
 const commentTextarea = document.querySelector(".comment-input-wrapper textarea");
 const commentButton = document.querySelector(".comment-input-wrapper button");
 const commentList = document.querySelector(".comment-list");
-let currentEditingComment = null; // 수정할 댓글 내용
 
-// 댓글 등록 버튼 비활성화 (초기상태)
+// 댓글 입력란 상태 초기화, 버튼 비활성화
+let currentEditingComment = null; 
 commentButton.disabled = true; 
 
-// 활성화, 비활성화 변경
+// 입력폼 변경 시 버튼 활성화, 비활성화 변경
 commentTextarea.addEventListener("blur", () => {
     const commentText = commentTextarea.value.trim();
     if (commentText.length > 0) { // 버튼 활성화
@@ -180,7 +185,7 @@ commentTextarea.addEventListener("blur", () => {
       }
 })
 
-// 댓글 등록/수정 버튼 클릭 이벤트 핸들링 
+// 사용자가 입력한 내용을 기반으로 댓글을 작성하거나 수정한다. 
 commentButton.addEventListener("click", async () => {
     const commentText = commentTextarea.value.trim();
     if (commentText.length === 0) return;
@@ -268,7 +273,7 @@ function resetCommentInput() {
   commentButton.textContent = "댓글 등록";
 }
 
-// 댓글 아이템 수정 버튼 클릭 이벤트 핸들링
+// 댓글 수정 버튼 클릭 시, 해당 댓글을 편집 상태로 만든다. 
 function handleEditClick(event) {
     const li = event.target.closest(".comment-item");
     const commentContent = li.querySelector(".comment-content");
@@ -283,9 +288,10 @@ function handleEditClick(event) {
     commentButton.style.backgroundColor = "#7F6AEE";
 }
 
+
 /* -----------------------------
-  * 2-3. 댓글 삭제
-  * ----------------------------- */
+ * 2-3. 댓글 삭제
+ * ----------------------------- */
  // 삭제할 댓글 요소 저장
 let currentDeletingComment = null;
 
@@ -300,7 +306,6 @@ function handleDeleteClick(event) {
   currentDeletingComment = li;
   commentDeleteModal.classList.add("active");
 }
-
 
 // 모달의 취소 버튼 클릭 시, 모달 닫기 
 commentDeleteCancelButton.addEventListener("click", () => {
@@ -354,12 +359,13 @@ commentDeleteConfirmButton.addEventListener("click", async () => {
 
 
 /* -----------------------------
-  * 3. 게시글 수정/삭제 기능
-  * ----------------------------- */
+ * 3. 게시글 수정/삭제 기능
+ * ----------------------------- */
+
 /* -----------------------------
-  * 3-1. 게시글 수정
-  * ----------------------------- */
-// 게시글 수정 페이지로 이동
+ * 3-1. 게시글 수정
+ * ----------------------------- */
+// 수정 버튼 클릭 시 게시글 수정 페이지로 이동
 postEditButton.addEventListener("click", (event) => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -367,12 +373,14 @@ postEditButton.addEventListener("click", (event) => {
     return;
   }
   
-  window.location.href = `../post/post-edit.html?postId=${postId}`;
+  window.location.href = `/src/pages/post/post-edit.html?postId=${postId}`;
 })
 
+
 /* -----------------------------
-  * 3-2. 게시글 삭제 모달
-  * ----------------------------- */
+ * 3-2. 게시글 삭제 모달
+ * ----------------------------- */
+// 삭제 버튼 클릭 시 확인 모달을 띄우고, 확인 시 게시글 삭제 요청을 보낸다.
 const postDeleteModal = document.querySelector('#post-delete-modal');
 const postDeleteCancelButton = postDeleteModal.querySelector(".modal-cancel");
 const postDeleteConfirmButton = postDeleteModal.querySelector(".modal-confirm");
@@ -421,7 +429,7 @@ postDeleteConfirmButton.addEventListener("click", async () => {
     postDeleteModal.classList.remove("active");
 
     // 삭제 후 목록 페이지로 이동
-    window.location.href = "../post/post.html";
+    window.location.href = "/src/pages/post/post.html";
 
   } catch (err) {
     console.error("게시글 삭제 중 오류:", err);
@@ -431,8 +439,9 @@ postDeleteConfirmButton.addEventListener("click", async () => {
 
 
 /* -----------------------------
-  * 4. 좋아요 추가/삭제 기능
-  * ----------------------------- */
+ * 4. 좋아요 추가/삭제 기능
+ * ----------------------------- */
+// 좋아요 버튼 클릭 시 서버에 요청을 보내고 UI 업데이트 
 likesItem.addEventListener("click", async () => {
   const token = localStorage.getItem("token");
   if (!token) {
@@ -480,7 +489,6 @@ likesItem.addEventListener("click", async () => {
     alert("좋아요 요청 중 오류가 발생했습니다.");
   }
 });
-
 
 // 좋아요 버튼 스타일 변경
 function updateLikeStyle() {

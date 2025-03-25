@@ -3,8 +3,8 @@ import { getImageUrl } from "/src/utils/image.js";
 // IIFE(즉시 실행 함수) 패턴을 사용하면 전역 스코프 오염을 줄인다.
 (function() {
     /* -----------------------------
-    * 0. 프로필 드롭다운 기능
-    * ----------------------------- */
+     * 1. 프로필 드롭다운 기능
+     * ----------------------------- */
     const profileBtn = document.querySelector(".header-profile");
     const dropdown = document.querySelector(".header-dropdown");
 
@@ -31,31 +31,34 @@ import { getImageUrl } from "/src/utils/image.js";
     })
 
     /* -----------------------------
-    * 1. 드롭다운 내 기능 
-    * ----------------------------- */
+     * 2. 드롭다운 내 기능 
+     * ----------------------------- */
+
     /* -----------------------------
-    * 1-1. 회원정보수정 페이지 이동
-    * ----------------------------- */
+     * 2-1. 회원정보수정 페이지 이동
+     * ----------------------------- */
     const elEditProfileButton = document.getElementById("edit-profile-btn");
     if (elEditProfileButton) {
         elEditProfileButton.addEventListener("click", () => {
-            window.location.href = "../profile/edit-profile.html";
+            window.location.href = "/src/pages/profile/edit-profile.html";
         })
     }
 
+
     /* -----------------------------
-    * 1-2. 비밀번호수정 페이지 이동
-    * ----------------------------- */
+     * 2-2. 비밀번호수정 페이지 이동
+     * ----------------------------- */
     const elEditPasswordButton = document.getElementById("edit-password-btn");
     if (elEditPasswordButton) {
         elEditPasswordButton.addEventListener("click", () => {
-            window.location.href = "../profile/edit-password.html";
+            window.location.href = "/src/pages/profile/edit-password.html";
         })
     }
 
+
     /* -----------------------------
-    * 1-3. 로그아웃
-    * ----------------------------- */
+     * 2-3. 로그아웃
+     * ----------------------------- */
     // 로컬스토리지에서 로그인 정보 삭제 후 로그인 페이지로 이동
     const elLogoutButton = document.getElementById("logout-btn");
     if (elLogoutButton) {
@@ -65,14 +68,14 @@ import { getImageUrl } from "/src/utils/image.js";
 
             alert("로그아웃 되었습니다.");
 
-            window.location.href = "../login/login.html";
+            window.location.href = "/src/pages/login/login.html";
         });
     }
 
 
     /* -----------------------------
-    * 2. 프로필 사진 설정
-    * ----------------------------- */
+     * 3. 헤더 내 프로필 사진 설정
+     * ----------------------------- */
     // 로그아웃 상태이면 요소를 숨긴다. 
     // 로그인 상태이면 로컬 스토리지의 유저 정보의 이미지를 삽입한다. 이미지가 없다면 회색으로 처리한다. 
     const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -106,11 +109,4 @@ import { getImageUrl } from "/src/utils/image.js";
             }
         }
     }
-
-    /* -----------------------------
-    * 3. 뒤로가기 버튼 설정
-    * ----------------------------- */
-    // 페이지 마다 뒤로가기 버튼 유무가 다르다. 
-    // : 각 페이지의 css코드에서 처리한다. 
-
 })();

@@ -12,19 +12,20 @@ const urlParams = new URLSearchParams(window.location.search);
 const postId = urlParams.get("postId");
 
 /* -----------------------------
-   * 1. 게시글 데이터 불러오기
-   * ----------------------------- */
+ * 1. 게시글 데이터 불러오기
+ * ----------------------------- */
+// 서버에서 게시글 데이터를 불러와 입력폼을 채운다. 
 window.addEventListener("DOMContentLoaded", async () => {
   if (!postId) {
     alert("잘못된 접근입니다.");
-    window.location.href = "../post/post.html";
+    window.location.href = "/src/pages/post/post.html";
     return;
   }
 
   const token = localStorage.getItem("token");
   if (!token) {
     alert("로그인이 필요합니다.");
-    window.location.href = "../login/login.html";
+    window.location.href = "/src/pages/login/login.html";
     return;
   }
 
@@ -50,9 +51,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     contentInput.value = post.content;
     inputHandler(); // 버튼 활성화 여부 판단
 
-    // 기존 이미지 보여주고 싶다면 여기에 추가
-    // document.querySelector('#existing-img-preview').src = post.imgUrl;
-
   } catch (err) {
     console.error("게시글 불러오기 실패:", err);
     alert("오류가 발생했습니다.");
@@ -60,8 +58,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 });
 
 /* -----------------------------
-   * 2. 게시글 수정 기능
-   * ----------------------------- */
+ * 2. 게시글 수정
+ * ----------------------------- */
 // 인풋 이벤트에 따라 버튼 활성화
 titleInput.addEventListener("blur", inputHandler);
 contentInput.addEventListener("blur", inputHandler);
@@ -81,7 +79,7 @@ function inputHandler() {
       }
 }
 
-// 게시글 수정 요청 
+// 게시글 수정 요청을 보내 게시글을 수정한다. 
 editBtn.addEventListener("click", async (event) => {
   event.preventDefault();
 
@@ -121,7 +119,7 @@ editBtn.addEventListener("click", async (event) => {
     }
 
     alert("게시글이 수정되었습니다.");
-    window.location.href = `../post/post-detail.html?postId=${json.data.postId}`;
+    window.location.href = `/src/pages/post/post-detail.html?postId=${json.data.postId}`;
 
   } catch (err) {
     console.error("게시글 수정 중 오류:", err);

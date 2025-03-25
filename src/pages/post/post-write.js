@@ -9,8 +9,8 @@ const helperText = document.querySelector('.helper-text');
 editBtn.disabled = true;
 
 /* -----------------------------
-   * 1. 게시글 등록 기능
-   * ----------------------------- */
+ * 1. 게시글 등록
+ * ----------------------------- */
 // 인풋 이벤트에 따라 버튼 활성화
 titleInput.addEventListener("blur", inputHandler);
 contentInput.addEventListener("blur", inputHandler);
@@ -74,7 +74,9 @@ editBtn.addEventListener("click", async (event) => {
     }
 
     alert("게시글이 작성되었습니다.");
-    window.location.href = `../post/post-detail.html?postId=${json.data.postId}`;
+
+    // 작성한 게시글 상세 페이지로 이동
+    window.location.href = `/src/pages/post/post-detail.html?postId=${json.data.postId}`;
 
   } catch (err) {
     console.error("게시글 작성 중 오류:", err);

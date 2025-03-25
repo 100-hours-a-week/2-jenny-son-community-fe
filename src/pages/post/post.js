@@ -3,8 +3,8 @@ import { getImageUrl } from "/src/utils/image.js";
 import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
-* 1. 인피니트 스크롤 기능
-* ----------------------------- */
+ * 1. 게시글 로드 
+ * ----------------------------- */
 const postListContent = document.querySelector(".postList-content");
 
 let isLoading = false; // 중복 요청 방지 플래그
@@ -13,14 +13,19 @@ let currentPage = 0;
 let isLastPage = false;
 
 // 초기 게시글 10개 로드
-postListContent.innerHTML = ""; // 기존 내용이 있다면 초기화
+postListContent.innerHTML = ""; 
 loadMorePosts();
 
-// 스크롤 이벤트 
+
+/* -----------------------------
+ * 1-1. 인피니트 스크롤 기능
+ * ----------------------------- */
+// 스크롤 이벤트가 발생하면, 게시글 10개를 더 로딩한다. 
 window.addEventListener("scroll", handleScroll);
 
 function handleScroll() {
-    if ( // 화면의 하단 근처에 도달 && 아직 로딩 중이 아닐 때
+    if ( 
+        // 화면의 하단 근처에 도달 && 아직 로딩 중이 아닐 때
         window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 10 && 
         !isLoading &&
         !isLastPage
@@ -33,10 +38,9 @@ function handleScroll() {
 
 
 /* -----------------------------
-* 2. 게시글 로드 (게시글 데이터 받아와서 화면 채우기)
-* ----------------------------- */
-
-// 게시글 로딩 함수 
+ * 1-2. 게시글 로드 
+ * ----------------------------- */
+// 게시글 목록 조회 요청을 통해 게시글 데이터를 받아와 화면을 채운다. 
 async function loadMorePosts() {
     try {
         const response = await fetch(`${BASE_URL}/posts?page=${currentPage}`);
@@ -71,10 +75,10 @@ async function loadMorePosts() {
                 </div>
             `;
     
-          // 상세 페이지로 이동
-          postItem.addEventListener("click", () => {
-            window.location.href = `/src/pages/post/post-detail.html?postId=${post.postId}`;
-          });
+            // 상세 페이지로 이동
+            postItem.addEventListener("click", () => {
+                window.location.href = `/src/pages/post/post-detail.html?postId=${post.postId}`;
+            });
     
             postListContent.appendChild(postItem);
         });
@@ -83,24 +87,24 @@ async function loadMorePosts() {
         isLastPage = pageInfo.last;
         isLoading = false;
     
-      } catch (error) {
-        console.error("게시글 로딩 실패:", error);
-        alert("게시글을 불러오는 중 오류가 발생했습니다.");
-      }
+    } catch (error) {
+    console.error("게시글 로딩 실패:", error);
+    alert("게시글을 불러오는 중 오류가 발생했습니다.");
+    }
 }
 
 
 /* -----------------------------
-* 3. 게시글 작성 버튼 기능
-* ----------------------------- */
+ * 2. 게시글 작성 버튼 기능
+ * ----------------------------- */
 // 클릭하면 게시글 작성 페이지로 이동
 const elWriteButton = document.getElementById("post-write-btn");
 elWriteButton.addEventListener("click", () => {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("로그인이 필요합니다.");
-      return;
+        alert("로그인이 필요합니다.");
+        return;
     }
 
-    window.location.href = "../post/post-write.html";
+    window.location.href = "/src/pages/post/post-write.html";
 })

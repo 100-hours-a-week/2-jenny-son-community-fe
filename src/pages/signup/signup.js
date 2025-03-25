@@ -2,8 +2,8 @@ import { emailValidChk, passwordValidChk } from '/src/utils/validation.js';
 import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
-   * 1. 회원가입 버튼 활성화/비활성화 기능
-   * ----------------------------- */
+ * 1. 회원가입 버튼 활성화/비활성화 기능
+ * ----------------------------- */
 let isEmailValid = false;
 let isPasswordValid = false;
 let isPasswordCheckValid = false;
@@ -23,11 +23,15 @@ function updateSignupButton() {
 
 
 /* -----------------------------
-   * 2-1. 이메일 유효성 검사 기능
-   * ----------------------------- */
-// 입력하다가 포커스 아웃될 때
-// 영문, @, . 만 사용 가능 -> 오류 메시지 (1) *올바른 이메일 주소 형식을 입력해주세요.
-// 비어 있는 경우 -> 오류 메시지 (2) *이메일을 입력해주세요
+ * 2. 입력폼 기능
+ * ----------------------------- */
+
+/* -----------------------------
+ * 2-1. 이메일 유효성 검사 
+ * ----------------------------- */
+// 입력하다가 포커스 아웃될 때 유효성 검사를 수행한다. 
+// - 영문, @, . 만 사용 가능 -> 오류 메시지 (1) *올바른 이메일 주소 형식을 입력해주세요.
+// - 비어 있는 경우 -> 오류 메시지 (2) *이메일을 입력해주세요
 const elInputEmail = document.getElementById("email");
 const elEmailFailureMessage = document.querySelector(".email-failure-message");
 
@@ -52,8 +56,8 @@ elInputEmail.addEventListener("blur", (event) => {
 
 
 /* -----------------------------
-   * 2-2. 프로필 사진 업로드 기능
-   * ----------------------------- */
+ * 2-2. 프로필 사진 업로드 
+ * ----------------------------- */
 const elImageInput = document.getElementById("profile-img-input");
 
 elImageInput.addEventListener("change", (event) => {
@@ -83,8 +87,8 @@ elImageInput.addEventListener("change", (event) => {
 
 
 /* -----------------------------
-   * 2-3. 비밀번호 & 비밀번호 확인 유효성 검사 기능
-   * ----------------------------- */
+ * 2-3. 비밀번호 & 비밀번호 확인 유효성 검사 
+ * ----------------------------- */
 const elInputPassword = document.getElementById("password");
 const elInputPasswordCheck = document.getElementById("passwordCheck");
 const elPasswordFailureMessage = document.querySelector(".password-failure-message");
@@ -139,8 +143,8 @@ elInputPasswordCheck.addEventListener("blur", (event) => {
 
 
 /* -----------------------------
-   * 2-4. 닉네임 유효성 검사 기능
-   * ----------------------------- */
+ * 2-4. 닉네임 유효성 검사 
+ * ----------------------------- */
 // 띄어쓰기 불가, 10글자 이내
 const elInputNickname = document.getElementById("nickname");
 const elNicknameFailureMessage = document.querySelector(".nickname-failure-message");
@@ -171,10 +175,11 @@ elInputNickname.addEventListener("blur", (event) => {
 
 
 /* -----------------------------
-   * 3. 회원가입 버튼 기능
-   * ----------------------------- */
-// 실패: 중복된 이메일인 경우 -> 오류 메시지 (이메일) * 중복된 이메일입니다. 
-// 실패: 중복된 닉네임인 경우 -> 오류 메시지 (닉네임) * 중복된 닉네임입니다. 
+ * 3. 회원가입 버튼 기능
+ * ----------------------------- */
+// 회원가입 버튼을 누르면 회원가입 요청을 보낸다. 
+// - 실패: 중복된 이메일인 경우 -> 오류 메시지 (이메일) * 중복된 이메일입니다. 
+// - 실패: 중복된 닉네임인 경우 -> 오류 메시지 (닉네임) * 중복된 닉네임입니다. 
 const elSignupButton = document.querySelector(".signup-btn");
 
 elSignupButton.addEventListener("click", async (event) => {
@@ -209,7 +214,7 @@ elSignupButton.addEventListener("click", async (event) => {
         if (response.status === 201) {
             // 성공
             if (confirm("회원가입에 성공했습니다!")) {
-                window.location.href = "../login/login.html";
+                window.location.href = "/src/pages/login/login.html";
             }
         } else if (response.status === 409) {
             // 중복된 이메일 or 닉네임
@@ -235,10 +240,11 @@ elSignupButton.addEventListener("click", async (event) => {
 
 
 /* -----------------------------
-   * 4. 로그인하러가기 버튼 기능 
-   * ----------------------------- */
+ * 4. 로그인하러가기 버튼 기능 
+ * ----------------------------- */
+// 로그인하러가기 버튼을 누르면 로그인 페이지로 이동한다. 
 const elLoginButton = document.querySelector(".login-btn");
 
 elLoginButton.addEventListener("click", (event) => {
-    window.location.href = "../login/login.html";
+    window.location.href = "/src/pages/login/login.html";
 })

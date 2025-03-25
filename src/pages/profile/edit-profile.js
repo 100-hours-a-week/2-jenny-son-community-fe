@@ -2,14 +2,15 @@ import { getImageUrl } from "/src/utils/image.js";
 import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
-* 1. 회원정보 조회
-* ----------------------------- */
+ * 1. 회원정보 조회
+ * ----------------------------- */
+// 회원정보 조회 요청을 보내고 데이터를 받아와 화면에 표시한다.
 async function fetchUserProfile() {
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("로그인이 필요합니다.");
-      window.location.href = "../login/login.html";
-      return;
+        alert("로그인이 필요합니다.");
+        window.location.href = "/src/pages/login/login.html";
+        return;
     }
   
     try {
@@ -22,7 +23,7 @@ async function fetchUserProfile() {
         if (response.status === 401) {
             alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
             localStorage.removeItem("token");
-            window.location.href = "../login/login.html";
+            window.location.href = "/src/pages/login/login.html";
             return;
         }
     
@@ -52,11 +53,12 @@ async function fetchUserProfile() {
 
 
 /* -----------------------------
-* 2. 입력폼 유효성 및 이미지 미리보기
-* ----------------------------- */
+ * 2. 입력폼 기능 
+ * ----------------------------- */
+
 /* -----------------------------
-* 2-1. 프로필 이미지 변경 기능
-* ----------------------------- */
+ * 2-1. 프로필 이미지 변경 기능
+ * ----------------------------- */
 const profileInput = document.getElementById("profile-img-input");
 profileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
@@ -75,8 +77,8 @@ profileInput.addEventListener("change", (event) => {
 
 
 /* -----------------------------
-* 2-2. 닉네임 유효성 검사 함수 (수정하기 버튼 누르면 수행됨)
-* ----------------------------- */
+ * 2-2. 닉네임 유효성 검사 함수 (수정하기 버튼 누르면 수행됨)
+ * ----------------------------- */
 // 띄어쓰기 불가, 10글자 이내
 function nicknameValidChk(nickname) {
     const elNicknameFailureMessage = document.querySelector(".nickname-failure-message");
@@ -108,59 +110,60 @@ function showErrorMessage(message) {
 
 
 /* -----------------------------
-* 3. 회원정보 수정
-* ----------------------------- */
+ * 3. 회원정보 수정
+ * ----------------------------- */
+// 회원정보 수정 버튼을 누르면, 회원정보 수정 요청을 보낸다. 
 const editBtn = document.querySelector(".edit-btn");
 const toast = document.querySelector(".commit-message");
 
 editBtn.addEventListener("click", async (e) => {
-  e.preventDefault();
-  editBtn.disabled = true;
+    e.preventDefault();
+    editBtn.disabled = true;
 
-  const nickname = document.querySelector("#nickname").value.trim();
-  const imageFile = profileInput.files[0];
+    const nickname = document.querySelector("#nickname").value.trim();
+    const imageFile = profileInput.files[0];
 
-  if (!nicknameValidChk(nickname)) {
+    if (!nicknameValidChk(nickname)) {
+        editBtn.disabled = false;
+        return;
+    }
+
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("nickname", nickname);
+    if (imageFile) formData.append("profileImg", imageFile);
+
+    try {
+        const response = await fetch(`${BASE_URL}/user`, {
+            method: "PATCH",
+            headers: { Authorization: `Bearer ${token}` },
+            body: formData
+        });
+
+        const json = await response.json();
+
+        if (response.status === 401) {
+            alert("다시 로그인해주세요.");
+            localStorage.removeItem("token");
+            window.location.href = "/src/pages/login/login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            alert(json.message || "회원정보 수정 실패");
+            editBtn.disabled = false;
+            return;
+        }
+
+        showToastMessage();
+        fetchUserProfile(); // 수정 후 UI 갱신
+
+    } catch (err) {
+        console.error("회원정보 수정 중 오류:", err);
+        alert("회원정보 수정 중 오류가 발생했습니다.");
+    }
+
     editBtn.disabled = false;
-    return;
-  }
-
-  const token = localStorage.getItem("token");
-  const formData = new FormData();
-  formData.append("nickname", nickname);
-  if (imageFile) formData.append("profileImg", imageFile);
-
-  try {
-    const response = await fetch(`${BASE_URL}/user`, {
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
-      body: formData
-    });
-
-    const json = await response.json();
-
-    if (response.status === 401) {
-      alert("다시 로그인해주세요.");
-      localStorage.removeItem("token");
-      window.location.href = "../login/login.html";
-      return;
-    }
-
-    if (!response.ok) {
-      alert(json.message || "회원정보 수정 실패");
-      editBtn.disabled = false;
-      return;
-    }
-
-    showToastMessage();
-    fetchUserProfile(); // 수정 후 UI 갱신
-
-  } catch (err) {
-    console.error("회원정보 수정 중 오류:", err);
-    alert("회원정보 수정 중 오류가 발생했습니다.");
-  }
-
-  editBtn.disabled = false;
 });
 
 // 수정 성공 시 토스트메시지 보여주는 함수
@@ -172,9 +175,11 @@ function showToastMessage() {
     }, 2000); // 2초 후 사라짐
 }
 
+
 /* -----------------------------
-* 4. 회원 탈퇴 기능
-* ----------------------------- */
+ * 4. 회원 탈퇴 기능
+ * ----------------------------- */
+// 회웥 탈퇴 버튼 클릭 시 모달을 열고, 모달 확인 버튼 클릭 시 회원탈퇴 요청을 보낸다. 
 const withdrawBtn = document.querySelector(".withdraw-btn");
 const modalOverlay = document.querySelector(".modal-overlay");
 const modalCancel = document.querySelector(".modal-cancel");
@@ -229,7 +234,7 @@ modalConfirm.addEventListener("click", async () => {
 
         modalOverlay.classList.remove("active");
 
-        window.location.href = "../login/login.html";
+        window.location.href = "/src/pages/login/login.html";
     } catch (error) {
         console.error("회원 탈퇴 오류:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다.");
