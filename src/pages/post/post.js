@@ -94,5 +94,11 @@ async function loadMorePosts() {
 // 클릭하면 게시글 작성 페이지로 이동
 const elWriteButton = document.getElementById("post-write-btn");
 elWriteButton.addEventListener("click", () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
     window.location.href = "../post/post-write.html";
 })
