@@ -34,7 +34,7 @@ html, body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    /* align-items: center; */
 }
 
 /* 게시글 제목 */
@@ -108,12 +108,15 @@ hr {
     margin: 10px 0;
     padding: 0;
     display: block;
+    width: 100%;
 }
 
 .post-content p {
     margin: 0 0 1em;  /* 아래쪽에 1em(글자 크기 기준) 여백 */  
     white-space: pre-line; /* 텍스트 안의 줄바꿈 그대로 적용 */
     text-align: left;
+    width: 100%;
+    padding-left: 4px;
 }
 
 .post-content img {
@@ -125,7 +128,7 @@ hr {
 
 /* 게시글 반응 영역 (좋아요수 조회수, 댓글) */
 .post-reaction {
-    width: 500px;
+    width: 100%;
     display: flex;
     justify-content: center;
     gap: 15px;
