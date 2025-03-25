@@ -9,7 +9,8 @@ html, body {
 
 /* 헤더 */
 .header-backsign {
-    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none;
 }
 
 /* 본문 */
@@ -20,7 +21,8 @@ html, body {
     justify-content: center;
     flex-grow: 1;
     padding: 50px;
-    margin-top: 40px;  
+    margin-top: 78px;  
+    flex: 1 1 auto; 
 }
 
 /* 본문 컨테이너 */

@@ -9,7 +9,12 @@ html, body {
 
 /* 헤더 */
 .header-profile {
-    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none;
+}
+.header-backsign {
+    visibility: hidden !important;
+    pointer-events: none;
 }
 
 .signup {
@@ -19,6 +24,7 @@ html, body {
     justify-content: center;
     flex-grow: 1;
     padding: 50px;
+    margin-top: 80px;
 }
 
 /* 회원가입 컨테이너 */

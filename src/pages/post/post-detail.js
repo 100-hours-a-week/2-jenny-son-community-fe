@@ -503,3 +503,11 @@ function updateLikeStyle() {
   likesItem.style.cursor = "pointer";
   likesItem.style.backgroundColor = isLiked ? "#ACA0EB" : "#D9D9D9";
 }
+
+
+/* -----------------------------
+ * 5. 헤더 뒤로가기 버튼 이동
+ * ----------------------------- */
+document.querySelector(".header-backsign")?.addEventListener("click", () => {
+  window.location.href = "/src/pages/post/post.html";
+});

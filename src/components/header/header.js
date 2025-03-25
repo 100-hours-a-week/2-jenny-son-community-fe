@@ -79,13 +79,17 @@ import { BASE_URL } from "/src/utils/api.js";
      * ----------------------------- */
     // 로그아웃 상태이면 요소를 숨긴다. 
     // 로그인 상태이면 회원정보 조회를 통해 유저 정보의 이미지를 삽입한다.
+    // 로그인 안 된 상태이면 로그인 버튼을 삽입한다. 
     async function renderHeaderProfile() {
         const token = localStorage.getItem("token");
         const elHeaderProfile = document.querySelector(".header-profile");
         const elProfileImage = document.querySelector(".header-profile-image");
-    
+        const elLoginButton = document.querySelector(".header-login-button");
+
         if (!token || !elHeaderProfile || !elProfileImage) {
+            // 로그인 안 된 상태이면 로그인 버튼 보이기 
             elHeaderProfile.style.display = "none";
+            if (elLoginButton) elLoginButton.style.display = "block";
             return;
         }
     
@@ -114,6 +118,23 @@ import { BASE_URL } from "/src/utils/api.js";
             elHeaderProfile.style.display = "none";
         }
     }
+
+
+    /* -----------------------------
+     * 4. (추가) 타이틀 클릭 시 게시글 목록 페이지로 이동 
+     * ----------------------------- */
+    document.querySelector(".header-title")?.addEventListener("click", () => {
+        window.location.href = "/src/pages/post/post.html";
+    });
+
+
+    /* -----------------------------
+     * 5. (추가) 로그인 버튼 클릭 시 로그인 페이지로 이동
+     * ----------------------------- */
+    document.getElementById("login-btn")?.addEventListener("click", () => {
+        window.location.href = "/src/pages/login/login.html";
+    });
+
 
     await renderHeaderProfile();
 })();

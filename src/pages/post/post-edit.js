@@ -126,3 +126,10 @@ editBtn.addEventListener("click", async (event) => {
     alert("게시글 수정 중 오류가 발생했습니다.");
   }
 })
+
+/* -----------------------------
+ * 3. 헤더 뒤로가기 버튼 이동
+ * ----------------------------- */
+document.querySelector(".header-backsign")?.addEventListener("click", () => {
+  window.location.href = `/src/pages/post/post-detail.html?postId=${post.postId}`;
+});

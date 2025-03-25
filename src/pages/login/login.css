@@ -9,10 +9,12 @@ html, body {
 
 /* 헤더 디자인 */
 .header-profile {
-    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none;
 }
 .header-backsign {
-    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none;
 }
 
 .login {
