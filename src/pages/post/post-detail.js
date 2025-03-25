@@ -1,4 +1,5 @@
 import { formatCount, formatTime } from "/src/utils/format.js";
+import { getImageUrl } from "/src/utils/image.js";
 import { BASE_URL } from "/src/utils/api.js";
 
 // URL에서 postId 추출
@@ -46,8 +47,8 @@ async function fetchPostDetail() {
 
     // DOM 업데이트
     titleElement.textContent = post.title;
-    profileImage.src = writer.writerImg || "/public/assets/profile.png";
-    authorName.textContent = writer.writerName;
+    profileImage.src = getImageUrl(writer.writerImg);
+    authorName.textContent = `${writer.writerName}`;
     createdAt.textContent = formatTime(post.createdAt);
     createdAt.setAttribute("datetime", post.createdAt);
     contentElement.textContent = post.content;
@@ -105,12 +106,13 @@ async function fetchComments() {
       li.dataset.commentId = comment.commentId;
       
       const author = comment.author;
+      const writerImgUrl = getImageUrl(comment.writerImg);
 
       li.innerHTML = `
         <div class="comment-item-head">
           <div class="author-info">
               <div class="profile-image-container">
-                  <img class="profile-image" alt="댓글 작성자 프로필 사진" src="${comment.writerImg || "/public/assets/profile.png"}"/>
+                  <img class="profile-image" alt="댓글 작성자 프로필 사진" src="${writerImgUrl}"/>
               </div>
               <span>${comment.writerName}</span>
               <time datetime="${comment.createdAt}">${formatTime(comment.createdAt)}</time>

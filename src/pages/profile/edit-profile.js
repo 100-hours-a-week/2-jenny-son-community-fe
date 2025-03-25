@@ -1,3 +1,4 @@
+import { getImageUrl } from "/src/utils/image.js";
 import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
@@ -12,41 +13,40 @@ async function fetchUserProfile() {
     }
   
     try {
-      const response = await fetch(`${BASE_URL}/user`, {
-        headers: {
-          Authorization: `Bearer ${token}`
+        const response = await fetch(`${BASE_URL}/user`, {
+            headers: {
+            Authorization: `Bearer ${token}`
+            }
+        });
+    
+        if (response.status === 401) {
+            alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
+            localStorage.removeItem("token");
+            window.location.href = "../login/login.html";
+            return;
         }
-      });
-  
-      if (response.status === 401) {
-        alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.removeItem("token");
-        window.location.href = "../login/login.html";
-        return;
-      }
-  
-      const json = await response.json();
-  
-      if (!response.ok) {
-        alert(json.message || "회원정보를 불러오지 못했습니다.");
-        return;
-      }
-  
-      const user = json.data.user;
-      console.log("회원정보:", user);
-  
-      // 화면에 데이터 채우기
-      const profileUpload = document.querySelector(".profile-upload .circle");
-      if (user.profileImg) {
-        profileUpload.style.backgroundImage = `url(${BASE_URL}${user.profileImg})`;
-      }
+    
+        const json = await response.json();
+    
+        if (!response.ok) {
+            alert(json.message || "회원정보를 불러오지 못했습니다.");
+            return;
+        }
+    
+        const user = json.data.user;
+        localStorage.setItem("user", JSON.stringify(json.data.user));
+        console.log("회원정보:", user);
+    
+        // 화면에 데이터 채우기
+        const profileUpload = document.querySelector(".profile-upload .circle");
+        profileUpload.style.backgroundImage = `url("${getImageUrl(user.profileImg)}")`;
 
-      document.querySelector(".email").textContent = user.email;
-      document.querySelector("#nickname").value = user.nickname;
-  
+        document.querySelector(".email").textContent = user.email;
+        document.querySelector("#nickname").value = user.nickname;
+    
     } catch (err) {
-      console.error("회원정보 조회 실패:", err);
-      alert("회원정보 조회 중 오류가 발생했습니다.");
+        console.error("회원정보 조회 실패:", err);
+        alert("회원정보 조회 중 오류가 발생했습니다.");
     }
 }
 
@@ -223,9 +223,12 @@ modalConfirm.addEventListener("click", async () => {
 
         // 성공 처리
         alert("회원 탈퇴가 완료되었습니다.");
+
         localStorage.removeItem("token");
-        localStorage.removeItem("loggedInUser");
+        localStorage.removeItem("user");
+
         modalOverlay.classList.remove("active");
+
         window.location.href = "../login/login.html";
     } catch (error) {
         console.error("회원 탈퇴 오류:", error);

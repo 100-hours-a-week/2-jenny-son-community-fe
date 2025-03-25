@@ -51,7 +51,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     inputHandler(); // 버튼 활성화 여부 판단
 
     // 기존 이미지 보여주고 싶다면 여기에 추가
-    // 예: document.querySelector('#existing-img-preview').src = post.imgUrl;
+    // document.querySelector('#existing-img-preview').src = post.imgUrl;
 
   } catch (err) {
     console.error("게시글 불러오기 실패:", err);

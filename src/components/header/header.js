@@ -1,3 +1,5 @@
+import { getImageUrl } from "/src/utils/image.js";
+
 // IIFE(즉시 실행 함수) 패턴을 사용하면 전역 스코프 오염을 줄인다.
 (function() {
     /* -----------------------------
@@ -58,7 +60,11 @@
     const elLogoutButton = document.getElementById("logout-btn");
     if (elLogoutButton) {
         elLogoutButton.addEventListener("click", () => {
-            localStorage.removeItem("loggedInUser");
+            localStorage.removeItem("token");         
+            localStorage.removeItem("loggedInUser");   
+
+            alert("로그아웃 되었습니다.");
+
             window.location.href = "../login/login.html";
         });
     }
@@ -69,7 +75,7 @@
     * ----------------------------- */
     // 로그아웃 상태이면 요소를 숨긴다. 
     // 로그인 상태이면 로컬 스토리지의 유저 정보의 이미지를 삽입한다. 이미지가 없다면 회색으로 처리한다. 
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+    const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
     const elHeaderProfile = document.querySelector(".header-profile");
     const elProfileImage = document.querySelector(".header-profile-image");
 
@@ -78,23 +84,21 @@
             // 로그인 상태: header-profile 보이기
             elHeaderProfile.style.display = "flex";
             
-            if (loggedInUser.profileImage) {
-                // 사용자가 프로필 이미지를 가지고 있다면
-                if (elProfileImage) {
-                    elProfileImage.src = loggedInUser.profileImage;
-                    // 이미지 로딩 실패 시 회색 배경 처리
-                    elProfileImage.onerror = function() {
-                        elProfileImage.style.display = "none";
-                        elHeaderProfile.style.backgroundColor = "#ccc";
-                    };
+            if (elHeaderProfile) {
+                if (loggedInUser && Object.keys(loggedInUser).length > 0) {
+                    elHeaderProfile.style.display = "flex";
+        
+                    if (elProfileImage) {
+                        elProfileImage.src = getImageUrl(loggedInUser.profileImg);
+                        elProfileImage.onerror = function () {
+                            elProfileImage.style.display = "none";
+                            elHeaderProfile.style.backgroundColor = "#ccc";
+                        };
+                    }
+                } else {
+                    elHeaderProfile.style.display = "none";
                 }
-            } else {
-                // 프로필 이미지가 없는 경우, 이미지 요소 감추고 회색 배경 적용
-                if (elProfileImage) {
-                    elProfileImage.style.display = "none";
-                }
-                elHeaderProfile.style.backgroundColor = "#ccc";
-            }
+            }    
         } else {
             // 로그인 상태가 아니면 header-profile 요소 자체를 숨김
             if (elHeaderProfile) {

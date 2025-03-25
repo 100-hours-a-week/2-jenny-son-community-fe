@@ -1,4 +1,5 @@
 import { truncateTitle, formatCount, formatTime } from "/src/utils/format.js";
+import { getImageUrl } from "/src/utils/image.js";
 import { BASE_URL } from "/src/utils/api.js";
 
 /* -----------------------------
@@ -42,39 +43,40 @@ async function loadMorePosts() {
         const json = await response.json();
     
         if (!response.ok) {
-          alert(json.message || "게시글을 불러오지 못했습니다.");
-          return;
+            alert(json.message || "게시글을 불러오지 못했습니다.");
+            return;
         }
     
         const posts = json.data.posts;
         const pageInfo = json.data;
     
         posts.forEach(post => {
-          const postItem = document.createElement("div");
-          postItem.className = "postList-item";
-          postItem.innerHTML = `
-            <div class="post-title">${truncateTitle(post.title, 26)}</div>
-            <div class="post-info">
-                <div class="numbers">
-                    <div>좋아요 ${formatCount(post.likeCnt)}</div>
-                    <div>댓글 ${formatCount(post.commentCnt)}</div>
-                    <div>조회수 ${formatCount(post.viewCnt)}</div>
+            const postItem = document.createElement("div");
+            postItem.className = "postList-item";
+            const writerImgUrl = getImageUrl(post.writerImg);
+            postItem.innerHTML = `
+                <div class="post-title">${truncateTitle(post.title, 26)}</div>
+                <div class="post-info">
+                    <div class="numbers">
+                        <div>좋아요 ${formatCount(post.likeCnt)}</div>
+                        <div>댓글 ${formatCount(post.commentCnt)}</div>
+                        <div>조회수 ${formatCount(post.viewCnt)}</div>
+                    </div>
+                    <div class="time">${formatTime(post.createdAt)}</div>
                 </div>
-                <div class="time">${formatTime(post.createdAt)}</div>
-            </div>
-            <div class="post-innerline"></div>
-            <div class="post-author">
-                <img src="${post.writerImg}" class="author-img" alt="profile"/>
-                <div class="author-name">${post.writerName}</div>
-            </div>
-          `;
+                <div class="post-innerline"></div>
+                <div class="post-author">
+                    <img src="${writerImgUrl}" class="author-img" alt="profile"/>
+                    <div class="author-name">${post.writerName}</div>
+                </div>
+            `;
     
           // 상세 페이지로 이동
           postItem.addEventListener("click", () => {
             window.location.href = `/src/pages/post/post-detail.html?postId=${post.postId}`;
           });
     
-          postListContent.appendChild(postItem);
+            postListContent.appendChild(postItem);
         });
     
         currentPage += 1;
