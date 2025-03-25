@@ -1,32 +1,54 @@
+import { BASE_URL } from "/src/utils/api.js";
+
 /* -----------------------------
-* 1. 유저 정보로 화면 채우기
+* 1. 회원정보 조회
 * ----------------------------- */
-const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
-
-if (loggedInUser && Object.keys(loggedInUser).length > 0) {
-    // 1. 프로필 이미지 설정
-    const elProfileUpload = document.querySelector(".profile-upload .circle");
-    if (elProfileUpload) {
-        if (loggedInUser.profileImage) {
-            elProfileUpload.style.backgroundImage = `url(${loggedInUser.profileImage})`;
-        } else {
-            elProfileUpload.style.backgroundColor = "#ccc"; // 기본 회색 배경
+async function fetchUserProfile() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "/login.html";
+      return;
+    }
+  
+    try {
+      const response = await fetch(`${BASE_URL}/user`, {
+        headers: {
+          Authorization: `Bearer ${token}`
         }
-    }
-
-    // 2. 이메일 표시 (텍스트로 보여주기)
-    const emailElement = document.querySelector(".edit-profile-item.email-item .email");
-    if (emailElement) {
-        emailElement.textContent = loggedInUser.email || "";
-    }
-
-    // 3. 닉네임 표시 (입력 필드에 기본값으로 채워넣기)
-    const nicknameInput = document.querySelector(".nickname-input");
-    if (nicknameInput) {
-        nicknameInput.value = loggedInUser.username || "";
+      });
+  
+      if (response.status === 401) {
+        alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.removeItem("token");
+        window.location.href = "/login.html";
+        return;
+      }
+  
+      const json = await response.json();
+  
+      if (!response.ok) {
+        alert(json.message || "회원정보를 불러오지 못했습니다.");
+        return;
+      }
+  
+      const user = json.data.user;
+      console.log("회원정보:", user);
+  
+      // 화면에 데이터 채우기
+      const profileUpload = document.querySelector(".profile-upload .circle");
+      if (user.profileImg) {
+        profileUpload.style.backgroundImage = `url(${user.profileImg})`;
+      }
+  
+      document.querySelector(".email").textContent = user.email;
+      document.querySelector("#nickname").value = user.nickname;
+  
+    } catch (err) {
+      console.error("회원정보 조회 실패:", err);
+      alert("회원정보 조회 중 오류가 발생했습니다.");
     }
 }
-
 
 /* -----------------------------
 * 2-1. 프로필 이미지 변경 기능
@@ -230,3 +252,6 @@ modalConfirm.addEventListener("click", async () => {
         alert("회원 탈퇴 중 오류가 발생했습니다.");
     }
 });
+
+// 페이지 로드 시 회원정보 조회 요청
+fetchUserProfile();
