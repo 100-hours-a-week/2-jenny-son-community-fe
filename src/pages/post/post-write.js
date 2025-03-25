@@ -30,7 +30,7 @@ function inputHandler() {
     }
 }
 
-// 작성 버튼 이벤트 핸들러 - POST 요청
+// 게시글 작성 요청
 editBtn.addEventListener("click", async (event) => {
     console.log("등록 버튼 클릭");
     event.preventDefault();

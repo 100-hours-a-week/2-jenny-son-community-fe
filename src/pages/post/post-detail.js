@@ -359,7 +359,13 @@ commentDeleteConfirmButton.addEventListener("click", async () => {
   * ----------------------------- */
 // 게시글 수정 페이지로 이동
 postEditButton.addEventListener("click", (event) => {
-    window.location.href = "../post/post-edit.html";
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
+  
+  window.location.href = `../post/post-edit.html?postId=${postId}`;
 })
 
 /* -----------------------------

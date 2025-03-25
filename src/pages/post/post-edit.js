@@ -1,22 +1,68 @@
-/* -----------------------------
-   * 4. 게시글 수정 기능
-   * ----------------------------- */
+import { BASE_URL } from "/src/utils/api.js";
+
 const editBtn = document.querySelector(".edit-button");
-
-editBtn.addEventListener("click", (event) => {
-    console.log("수정 버튼 클릭");
-    // 내용 가져오기
-    // 수정 요청
-
-    // 수정 성공 시
-    alert("게시글이 수정되었습니다.");
-    // 게시글 상세 페이지로 이동 
-})
-
 const titleInput = document.querySelector("#post-title");
 const contentInput = document.querySelector("#post-content");
+const imageInput = document.querySelector("#post-image");
 const helperText = document.querySelector('.helper-text');
 
+editBtn.disabled = true;
+
+const urlParams = new URLSearchParams(window.location.search);
+const postId = urlParams.get("postId");
+
+/* -----------------------------
+   * 1. 게시글 데이터 불러오기
+   * ----------------------------- */
+window.addEventListener("DOMContentLoaded", async () => {
+  if (!postId) {
+    alert("잘못된 접근입니다.");
+    window.location.href = "../post/post.html";
+    return;
+  }
+
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    window.location.href = "../login/login.html";
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("token");
+      return;
+    }
+
+    const json = await response.json();
+    if (!response.ok) {
+      alert(json.message || "게시글 정보를 불러올 수 없습니다.");
+      return;
+    }
+
+    const post = json.data;
+    titleInput.value = post.title;
+    contentInput.value = post.content;
+    inputHandler(); // 버튼 활성화 여부 판단
+
+    // 기존 이미지 보여주고 싶다면 여기에 추가
+    // 예: document.querySelector('#existing-img-preview').src = post.imgUrl;
+
+  } catch (err) {
+    console.error("게시글 불러오기 실패:", err);
+    alert("오류가 발생했습니다.");
+  }
+});
+
+/* -----------------------------
+   * 2. 게시글 수정 기능
+   * ----------------------------- */
+// 인풋 이벤트에 따라 버튼 활성화
 titleInput.addEventListener("blur", inputHandler);
 contentInput.addEventListener("blur", inputHandler);
 
@@ -35,5 +81,50 @@ function inputHandler() {
       }
 }
 
-// 처음에 페이지 로딩 시 제목, 내용, 이미지 채워넣어야 함.
+// 게시글 수정 요청 
+editBtn.addEventListener("click", async (event) => {
+  event.preventDefault();
 
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("title", titleInput.value.trim());
+  formData.append("content", contentInput.value.trim());
+  if (imageInput.files.length > 0) {
+    formData.append("img", imageInput.files[0]);
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
+      method: "PATCH",
+      headers: {
+        Authorization: `Bearer ${token}`
+      },
+      body: formData
+    });
+
+    const json = await response.json();
+
+    if (response.status === 401 || response.status === 403) {
+      alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+      localStorage.removeItem("token");
+      return;
+    }
+
+    if (!response.ok) {
+      alert(json.message || "게시글 수정에 실패했습니다.");
+      return;
+    }
+
+    alert("게시글이 수정되었습니다.");
+    window.location.href = `../post/post-detail.html?postId=${json.data.postId}`;
+
+  } catch (err) {
+    console.error("게시글 수정 중 오류:", err);
+    alert("게시글 수정 중 오류가 발생했습니다.");
+  }
+})
