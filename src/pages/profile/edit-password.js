@@ -1,3 +1,5 @@
+import { BASE_URL } from "/src/utils/api.js";
+
 /* -----------------------------
 * 1. 비밀번호 & 비밀번호 확인 유효성 검사
 * ----------------------------- */
@@ -81,12 +83,52 @@ function validatePassword() {
 /* -----------------------------
 * 2. 비밀번호 수정하기 버튼 기능
 * ----------------------------- */
-editBtn.addEventListener("click", () => {
+editBtn.addEventListener("click", async () => {
     editBtn.disabled = true;
-    // 가상 요청
-    setTimeout(() => {
-        showToastMessage();
-    }, 500);
+    
+    const password = passwordInput.value.trim();
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        alert("로그인이 필요합니다.");
+        window.location.href = "../login/login.html";
+        return;
+    }
+
+    try {
+        const response = await fetch(`${BASE_URL}/user/password`, {
+        method: "PATCH",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ password })
+        });
+
+        const json = await response.json();
+
+        if (response.status === 401) {
+            alert("로그인이 만료되었습니다. 다시 로그인해주세요.");
+            localStorage.removeItem("token");
+            window.location.href = "../login/login.html";
+            return;
+        }
+
+        if (!response.ok) {
+            alert(json.message || "비밀번호 변경에 실패했습니다.");
+            editBtn.disabled = false;
+            return;
+        }
+
+        showToastMessage(); // 성공 시 토스트 메시지 표시
+        passwordInput.value = "";
+        passwordCheckInput.value = "";
+
+    } catch (err) {
+        console.error("비밀번호 변경 중 오류:", err);
+        alert("비밀번호 변경 중 오류가 발생했습니다.");
+        editBtn.disabled = false;
+    }
 });
 
 
