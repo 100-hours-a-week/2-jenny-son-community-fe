@@ -38,7 +38,7 @@ async function fetchUserProfile() {
       // 화면에 데이터 채우기
       const profileUpload = document.querySelector(".profile-upload .circle");
       if (user.profileImg) {
-        profileUpload.style.backgroundImage = `url(${user.profileImg})`;
+        profileUpload.style.backgroundImage = `url(${BASE_URL}${user.profileImg})`;
       }
   
       document.querySelector(".email").textContent = user.email;
@@ -50,12 +50,14 @@ async function fetchUserProfile() {
     }
 }
 
+
+/* -----------------------------
+* 2. 입력폼 유효성 및 이미지 미리보기
+* ----------------------------- */
 /* -----------------------------
 * 2-1. 프로필 이미지 변경 기능
 * ----------------------------- */
 const profileInput = document.getElementById("profile-img-input");
-
-// 파일 선택 시 이벤트 처리
 profileInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
     const elProfileUpload = document.querySelector(".profile-upload .circle");
@@ -104,92 +106,69 @@ function showErrorMessage(message) {
     elErrorMessage.classList.remove("hide");
 }
 
+
 /* -----------------------------
-* 3. 수정하기 버튼 기능
+* 3. 회원정보 수정
 * ----------------------------- */
-/* 수정하기 요청 & 수정 완료 토스트 메시지 기능 */
-const elEditBtn = document.querySelector(".edit-btn");
-const elErrorMessage = document.querySelector(".error-container .failure-message");
-const toastMessage = document.querySelector(".commit-message");
+const editBtn = document.querySelector(".edit-btn");
+const toast = document.querySelector(".commit-message");
 
-// 수정하기 버튼 클릭 핸들러 
-elEditBtn.addEventListener("click", async (event) => {
-    event.preventDefault();
-    elEditBtn.disabled = true;
+editBtn.addEventListener("click", async (e) => {
+  e.preventDefault();
+  editBtn.disabled = true;
 
-    const nicknameInput = document.querySelector(".nickname-input");
-    const newNickname = nicknameInput.value.trim();
+  const nickname = document.querySelector("#nickname").value.trim();
+  const imageFile = profileInput.files[0];
 
-    console.log("입력된 닉네임: ", newNickname);
+  if (!nicknameValidChk(nickname)) {
+    editBtn.disabled = false;
+    return;
+  }
 
-    // 닉네임 유효성 검사
-    if (!nicknameValidChk(newNickname)) {
-        return;
+  const token = localStorage.getItem("token");
+  const formData = new FormData();
+  formData.append("nickname", nickname);
+  if (imageFile) formData.append("profileImg", imageFile);
+
+  try {
+    const response = await fetch(`${BASE_URL}/user`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData
+    });
+
+    const json = await response.json();
+
+    if (response.status === 401) {
+      alert("다시 로그인해주세요.");
+      localStorage.removeItem("token");
+      window.location.href = "/login.html";
+      return;
     }
-    elErrorMessage.classList.add("hide");
 
-    // localStorage에서 로그인한 사용자 정보 불러오기
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
-    if (!loggedInUser.id) {
-        alert("로그인 정보가 없습니다.");
-        return;
+    if (!response.ok) {
+      alert(json.message || "회원정보 수정 실패");
+      editBtn.disabled = false;
+      return;
     }
+
     showToastMessage();
-    try {
-        // json-server에서 사용자 목록 가져오기
-        const response = await fetch("http://localhost:3000/users");
-        if (!response.ok) {
-            throw new Error("사용자 데이터를 불러오는데 실패했습니다.");
-        }
-        const users = await response.json();
+    fetchUserProfile(); // 수정 후 UI 갱신
 
-        // 중복 닉네임인 경우 수정 실패
-        const duplicateUser = users.find(user => 
-            user.username === newNickname && user.id !== loggedInUser.id
-        );
-        if (duplicateUser) {
-            showErrorMessage("중복된 닉네임입니다.");
-            return;
-        }
+  } catch (err) {
+    console.error("회원정보 수정 중 오류:", err);
+    alert("회원정보 수정 중 오류가 발생했습니다.");
+  }
 
-        // 새 사용자 데이터 객체 생성
-        const updatedUser = {
-            ...loggedInUser,
-            username: newNickname,
-            profileImage: '/public/assets/goorm.png'
-        };
-
-        // json-server의 users 엔드포인트에 PATCH 요청 보내기
-        const patchResponse = await fetch(`http://localhost:3000/users/${loggedInUser.id}`, {
-            method: "PATCH",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(updatedUser)
-        });
-        // 위 코드가 새로고침을 유발해 토스트메시지가 보이다가 잘림.
-
-        if (patchResponse.ok) {
-            // 업데이트 성공 시 localStorage에 변경된 사용자 정보 저장
-            localStorage.setItem("loggedInUser", JSON.stringify(updatedUser));
-            // 수정 완료 토스트 메시지 표시 
-            showToastMessage();
-        } else {
-            alert("회원정보 수정에 실패하였습니다. 다시 시도해 주세요.");
-        }
-    } catch (error) {
-        console.error("회원정보 수정 오류:", error);
-        alert("회원정보 수정 중 오류가 발생했습니다.");
-    }
-    elEditBtn.disabled = false;
+  editBtn.disabled = false;
 });
 
 // 수정 성공 시 토스트메시지 보여주는 함수
 function showToastMessage() {
-    toastMessage.classList.add("show");
+    toast.classList.add("show");
 
     setTimeout(()=> {
-        toastMessage.classList.remove("show");
+        toast.classList.remove("show");
     }, 2000); // 2초 후 사라짐
 }
 
