@@ -2,8 +2,8 @@ import { BASE_URL } from "/src/utils/api.js";
 import { emailValidChk, passwordValidChk } from '/src/utils/validation.js';
 
 /* -----------------------------
-   * 1. 이메일 & 비밀번호 입력 및 유효성 검사 
-   * ----------------------------- */
+ * 1. 이메일 & 비밀번호 입력 및 유효성 검사 
+ * ----------------------------- */
 let elInputEmail = document.querySelector('#email'); // input#email
 let elEmailFailureMessage = document.querySelector('.email-failure-message'); 
 let elInputPassword = document.querySelector('#password');
@@ -71,8 +71,8 @@ function updateLoginButton(isEmailValid, isPasswordValid) {
 
 
 /* -----------------------------
-   * 2. 로그인 기능 
-   * ----------------------------- */
+ * 2. 로그인 기능 
+ * ----------------------------- */
 // 로그인 요청을 보낸다.
 // 로그인 성공 시 로컬스토리지에 유저정보와 토큰 저장하고, 게시글 목록 페이지로 이동한다.
 elButtonLogin.addEventListener("click", async (event) => {
@@ -126,8 +126,8 @@ elButtonLogin.addEventListener("click", async (event) => {
 
 
 /* -----------------------------
-   * 3. 회원가입 페이지 이동
-   * ----------------------------- */
+ * 3. 회원가입 페이지 이동
+ * ----------------------------- */
 // 회원가입 버튼을 누르면 회원가입 페이지로 이동한다. 
 const signupButton = document.querySelector(".signup-btn");
 signupButton.addEventListener("click", (event) => {

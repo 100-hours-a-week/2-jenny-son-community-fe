@@ -50,11 +50,19 @@ async function fetchPostDetail() {
 
     // DOM 업데이트
     titleElement.textContent = post.title;
+
+    // 이미지 + 본문 렌더링 
+    let contentHtml = "";
+    if (post.img) {
+      contentHtml += `<img src="${getImageUrl(post.img)}" alt="게시글 이미지" class="post-image" />`;
+    }
+    contentHtml += `<p>${post.content}</p>`;
+    contentElement.innerHTML = contentHtml;
+
     profileImage.src = getImageUrl(writer.writerImg);
     authorName.textContent = `${writer.writerName}`;
     createdAt.textContent = formatTime(post.createdAt);
     createdAt.setAttribute("datetime", post.createdAt);
-    contentElement.textContent = post.content;
     likesCountElement.textContent = formatCount(post.likeCnt);
     viewsCountElement.textContent = formatCount(post.viewCnt);
     commentsCountElement.textContent = formatCount(post.commentCnt);
