@@ -354,9 +354,16 @@ commentDeleteConfirmButton.addEventListener("click", async () => {
   * 3. 게시글 수정/삭제 기능
   * ----------------------------- */
 /* -----------------------------
-  * 3-1. 게시글 삭제 모달
+  * 3-1. 게시글 수정
   * ----------------------------- */
-// const postDeleteButton = document.querySelector("#post-delete-button");
+// 게시글 수정 페이지로 이동
+postEditButton.addEventListener("click", (event) => {
+    window.location.href = "../post/post-edit.html";
+})
+
+/* -----------------------------
+  * 3-2. 게시글 삭제 모달
+  * ----------------------------- */
 const postDeleteModal = document.querySelector('#post-delete-modal');
 const postDeleteCancelButton = postDeleteModal.querySelector(".modal-cancel");
 const postDeleteConfirmButton = postDeleteModal.querySelector(".modal-confirm");
@@ -366,24 +373,51 @@ postDeleteButton.addEventListener("click", (event) => {
   postDeleteModal.classList.add("active");
 })
 
-// 모달 취소 버튼 클릭 시 모달 닫기 
+// 모달 취소 버튼 클릭 시, 모달 닫기 
 postDeleteCancelButton.addEventListener("click", () => {
   postDeleteModal.classList.remove("active");
 });
 
-// 모달 외부 클릭 시 모달 닫기
+// 모달 외부 클릭 시, 모달 닫기
 postDeleteModal.addEventListener("click", (event) => {
   if (event.target === postDeleteModal) {
     postDeleteModal.classList.remove("active");
   }
 });
 
-// 모달 확인 버튼 클릭 시 게시글 삭제하고 목록 페이지로 이동
-postDeleteConfirmButton.addEventListener("click", () => {
-  // 게시글 삭제 요청 성공 시
-  alert("게시글이 삭제되었습니다.");
-  postDeleteModal.classList.remove("active");
-  // 목록 페이지로 이동 
+// 모달 확인 버튼 클릭 시, DELETE 요청
+postDeleteConfirmButton.addEventListener("click", async () => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    alert("로그인이 필요합니다.");
+    return;
+  }
+
+  try {
+    const response = await fetch(`${BASE_URL}/posts/${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    const json = await response.json();
+
+    if (!response.ok) {
+      alert(json.message || "게시글 삭제에 실패했습니다.");
+      return;
+    }
+
+    alert("게시글이 삭제되었습니다.");
+    postDeleteModal.classList.remove("active");
+
+    // 삭제 후 목록 페이지로 이동
+    window.location.href = "/pages/post-list.html"; // 경로는 프로젝트 구조에 맞게 수정
+
+  } catch (err) {
+    console.error("게시글 삭제 중 오류:", err);
+    alert("게시글 삭제 중 오류가 발생했습니다.");
+  }
 });
 
 
