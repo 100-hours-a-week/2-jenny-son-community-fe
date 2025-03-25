@@ -37,6 +37,7 @@ async function fetchPostDetail() {
 
     if (!response.ok) {
       alert(json.message || "게시글을 불러오지 못했습니다.");
+      window.location.href = "../post/post.html";
       return;
     }
 
@@ -412,7 +413,7 @@ postDeleteConfirmButton.addEventListener("click", async () => {
     postDeleteModal.classList.remove("active");
 
     // 삭제 후 목록 페이지로 이동
-    window.location.href = "/pages/post-list.html"; // 경로는 프로젝트 구조에 맞게 수정
+    window.location.href = "../post/post.html";
 
   } catch (err) {
     console.error("게시글 삭제 중 오류:", err);
