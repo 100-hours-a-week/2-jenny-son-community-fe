@@ -7,7 +7,7 @@ async function fetchUserProfile() {
     const token = localStorage.getItem("token");
     if (!token) {
       alert("로그인이 필요합니다.");
-      window.location.href = "/login.html";
+      window.location.href = "../login/login.html";
       return;
     }
   
@@ -21,7 +21,7 @@ async function fetchUserProfile() {
       if (response.status === 401) {
         alert("로그인 시간이 만료되었습니다. 다시 로그인해주세요.");
         localStorage.removeItem("token");
-        window.location.href = "/login.html";
+        window.location.href = "../login/login.html";
         return;
       }
   
@@ -40,7 +40,7 @@ async function fetchUserProfile() {
       if (user.profileImg) {
         profileUpload.style.backgroundImage = `url(${BASE_URL}${user.profileImg})`;
       }
-  
+
       document.querySelector(".email").textContent = user.email;
       document.querySelector("#nickname").value = user.nickname;
   
@@ -142,7 +142,7 @@ editBtn.addEventListener("click", async (e) => {
     if (response.status === 401) {
       alert("다시 로그인해주세요.");
       localStorage.removeItem("token");
-      window.location.href = "/login.html";
+      window.location.href = "../login/login.html";
       return;
     }
 
@@ -199,33 +199,34 @@ modalOverlay.addEventListener("click", (event) => {
 
 // 확인 버튼 클릭 시 회원 탈퇴 처리 
 modalConfirm.addEventListener("click", async () => {
-    // localStorage에서 로그인한 사용자 정보 가져오기
-    const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser") || "{}");
+    const token = localStorage.getItem("token");
 
-    // 로그인 정보가 없으면 탈퇴 진행 불가
-    if (!loggedInUser || !loggedInUser.id) {
+    if (!token) {
         alert("로그인 정보가 없습니다.");
         return;
     }
 
     try {
-        // json-server에서 해당 사용자를 삭제
-        const response = await fetch(`http://localhost:3000/users/${loggedInUser.id}`, {
-            method: "DELETE"
+        const response = await fetch(`${BASE_URL}/user`, {
+        method: "DELETE",
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
         });
 
-        if (response.ok) {
-            // 삭제 성공 시 로컬스토리지에서 사용자 정보 제거
-            localStorage.removeItem("loggedInUser");
+        const json = await response.json();
 
-            alert("회원 탈퇴가 완료되었습니다.");
-            modalOverlay.classList.remove("active");
-
-            // 로그인 페이지로 이동
-            window.location.href = "../login/login.html";
-        } else {
-            alert("회원 탈퇴에 실패하였습니다. 다시 시도해 주세요.");
+        if (!response.ok) {
+        alert(json.message || "회원 탈퇴에 실패했습니다.");
+        return;
         }
+
+        // 성공 처리
+        alert("회원 탈퇴가 완료되었습니다.");
+        localStorage.removeItem("token");
+        localStorage.removeItem("loggedInUser");
+        modalOverlay.classList.remove("active");
+        window.location.href = "../login/login.html";
     } catch (error) {
         console.error("회원 탈퇴 오류:", error);
         alert("회원 탈퇴 중 오류가 발생했습니다.");
