@@ -1,7 +1,8 @@
 import { getImageUrl } from "/src/utils/image.js";
+import { BASE_URL } from "/src/utils/api.js";
 
 // IIFE(즉시 실행 함수) 패턴을 사용하면 전역 스코프 오염을 줄인다.
-(function() {
+(async function() {
     /* -----------------------------
      * 1. 프로필 드롭다운 기능
      * ----------------------------- */
@@ -77,36 +78,42 @@ import { getImageUrl } from "/src/utils/image.js";
      * 3. 헤더 내 프로필 사진 설정
      * ----------------------------- */
     // 로그아웃 상태이면 요소를 숨긴다. 
-    // 로그인 상태이면 로컬 스토리지의 유저 정보의 이미지를 삽입한다. 이미지가 없다면 회색으로 처리한다. 
-    const loggedInUser = JSON.parse(localStorage.getItem("user") || "{}");
-    const elHeaderProfile = document.querySelector(".header-profile");
-    const elProfileImage = document.querySelector(".header-profile-image");
-
-    if (elHeaderProfile) {
-        if (loggedInUser && Object.keys(loggedInUser).length > 0) {
-            // 로그인 상태: header-profile 보이기
-            elHeaderProfile.style.display = "flex";
-            
-            if (elHeaderProfile) {
-                if (loggedInUser && Object.keys(loggedInUser).length > 0) {
-                    elHeaderProfile.style.display = "flex";
-        
-                    if (elProfileImage) {
-                        elProfileImage.src = getImageUrl(loggedInUser.profileImg);
-                        elProfileImage.onerror = function () {
-                            elProfileImage.style.display = "none";
-                            elHeaderProfile.style.backgroundColor = "#ccc";
-                        };
-                    }
-                } else {
-                    elHeaderProfile.style.display = "none";
+    // 로그인 상태이면 회원정보 조회를 통해 유저 정보의 이미지를 삽입한다.
+    async function renderHeaderProfile() {
+        const token = localStorage.getItem("token");
+        const elHeaderProfile = document.querySelector(".header-profile");
+        const elProfileImage = document.querySelector(".header-profile-image");
+    
+        if (!token || !elHeaderProfile || !elProfileImage) {
+            elHeaderProfile.style.display = "none";
+            return;
+        }
+    
+        try {
+            const response = await fetch(`${BASE_URL}/user`, {
+                headers: { 
+                    Authorization: `Bearer ${token}` 
                 }
-            }    
-        } else {
-            // 로그인 상태가 아니면 header-profile 요소 자체를 숨김
-            if (elHeaderProfile) {
+            });
+    
+            if (!response.ok) {
                 elHeaderProfile.style.display = "none";
+                return;
             }
+
+            const { data } = await response.json();
+
+            elHeaderProfile.style.display = "flex";
+            elProfileImage.src = getImageUrl(data.user.profileImg);
+            elProfileImage.onerror = () => {
+                elProfileImage.style.display = "none";
+                elHeaderProfile.style.backgroundColor = "#ccc";
+            };
+        } catch (err) {
+            console.error("헤더 프로필 불러오기 실패:", err);
+            elHeaderProfile.style.display = "none";
         }
     }
+
+    await renderHeaderProfile();
 })();

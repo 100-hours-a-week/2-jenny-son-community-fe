@@ -16,7 +16,7 @@ async function fetchUserProfile() {
     try {
         const response = await fetch(`${BASE_URL}/user`, {
             headers: {
-            Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`
             }
         });
     
