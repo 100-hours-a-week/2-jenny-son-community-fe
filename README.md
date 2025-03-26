@@ -97,17 +97,19 @@ community-fe
   - 드롭다운에서 회원정보 수정, 비밀번호 수정 페이지로 이동, 로그아웃 기능
   - 로그아웃 처리
 
+![게시판(비로그인 상태)](https://github.com/user-attachments/assets/97fb3853-dbf4-4a3c-9a04-c10d3b5fd3a0)
 ![로그인](https://github.com/user-attachments/assets/76ec1a22-168e-496d-b510-35fa236e33cb)
 ![회원가입](https://github.com/user-attachments/assets/f66505a2-4643-421d-a4bb-2ed93cdea80c)
-![게시판](https://github.com/user-attachments/assets/d3c18cd4-f1d9-40a7-ad8d-9b2caaf7c777)
+![게시판(로그인 상태)](https://github.com/user-attachments/assets/d3c18cd4-f1d9-40a7-ad8d-9b2caaf7c777)
 ![게시글](https://github.com/user-attachments/assets/c0f78a82-c25b-4c03-96e5-82b2677fba6e)
 ![게시글 수정](https://github.com/user-attachments/assets/13ea96e0-857f-49d5-8cf0-681d06e5cda4)
 ![게시글 삭제 모달](https://github.com/user-attachments/assets/85f0a7f9-308e-4d4a-b8ee-6539a99b2229)
 ![게시글 작성](https://github.com/user-attachments/assets/afbe5c59-2806-4d77-b519-e4263e255c45)
 ![댓글 기능](https://github.com/user-attachments/assets/d6293772-de59-4a81-8745-4157c18826af)
-![댓글 수정](https://github.com/user-attachments/assets/74409b9a-ba43-483c-8419-9f41f536ccd9)
-![댓글 삭제](https://github.com/user-attachments/assets/e0d174ba-0591-4662-8b2a-b23db30b45af)
+![댓글 수정 기능](https://github.com/user-attachments/assets/74409b9a-ba43-483c-8419-9f41f536ccd9)
+![댓글 삭제 모달](https://github.com/user-attachments/assets/e0d174ba-0591-4662-8b2a-b23db30b45af)
 ![회원정보 수정](https://github.com/user-attachments/assets/3f6ddcea-afe8-4bca-b732-98e84513b726)
 ![비밀번호 변경](https://github.com/user-attachments/assets/0dc29dc9-dadd-4bc9-bc6c-ff0d15af1a8f)
+![회원탈퇴 모달](https://github.com/user-attachments/assets/934623ed-ea73-4b9b-89f3-283306267b07)
 
 
